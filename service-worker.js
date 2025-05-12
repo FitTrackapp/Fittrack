@@ -1,94 +1,82 @@
 // service-worker.js
 
-const CACHE_NAME = 'fittrack-v1.1'; // Increment version when you update assets
+const CACHE_NAME = 'fittrack-v1.3'; // Increment version number!
+// Use relative paths from the root where SW is located
 const urlsToCache = [
-    '/', // Cache the root/index page
-    '/index.html', // Explicitly cache the main HTML
-    // Add other *essential* local assets if needed (e.g., a separate CSS or JS file)
-    // '/style.css',
-    // '/app.js',
-    '/icons/icon-192x192.png', // Cache key icons
-    '/icons/icon-512x512.png',
-    '/icons/badge-72x72.png' // Cache badge icon if you created one
-    // Note: Avoid caching external resources like Tailwind CDN or Google Fonts directly in 'install'
-    // as failure to fetch one can break the entire install. Cache them via 'fetch' if needed.
+    './', // Cache the root directory (often resolves to index.html)
+    'index.html',
+    'manifest.json',
+    'service-worker.js', // Cache the worker itself
+    'icons/icon-180x180.png',
+    'icons/icon-192x192.png',
+    'icons/icon-512x512.png',
+    'icons/badge-72x72.png'
+    // Add other essential assets if needed
 ];
 
-let activeTimerTimeoutId = null; // To store setTimeout ID for timer fallback
+let activeTimerTimeoutId = null;
 
 // --- Lifecycle Events ---
 
-// Install event: Cache essential app assets
 self.addEventListener('install', event => {
-    console.log('Service Worker: Installing...');
+    console.log('SW Install Event: Caching app shell');
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Service Worker: Caching app shell');
+                console.log('SW Opened cache:', CACHE_NAME);
+                console.log('SW Caching:', urlsToCache);
+                // Add URLs one by one for better error isolation if needed
+                // return Promise.all(urlsToCache.map(url => cache.add(url).catch(e => console.error(`SW failed to cache ${url}`, e))));
                 return cache.addAll(urlsToCache);
             })
-            .then(() => self.skipWaiting()) // Activate new SW immediately
+            .then(() => {
+                console.log('SW Shell cached successfully. Skipping waiting.');
+                return self.skipWaiting();
+             })
             .catch(error => {
-                console.error('Service Worker: Caching failed during install:', error);
+                console.error('SW Caching failed during install:', error);
             })
     );
 });
 
-// Activate event: Clean up old caches
 self.addEventListener('activate', event => {
-    console.log('Service Worker: Activating...');
+    console.log('SW Activate Event: Cleaning old caches...');
     const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
                     if (!cacheWhitelist.includes(cacheName)) {
-                        console.log('Service Worker: Deleting old cache', cacheName);
+                        console.log('SW Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
-        }).then(() => self.clients.claim()) // Take control of clients immediately
+        }).then(() => {
+             console.log('SW Claiming clients.');
+             return self.clients.claim();
+        })
+        .catch(error => {
+            console.error('SW Activation failed:', error);
+        })
     );
 });
 
-// Fetch event: Serve cached assets first, fallback to network (Cache-First Strategy)
 self.addEventListener('fetch', event => {
-    // Let browser handle non-GET requests or chrome-extension:// requests
     if (event.request.method !== 'GET' || event.request.url.startsWith('chrome-extension://')) {
        return;
     }
-
+    // Network falling back to cache for API requests or dynamic content might be better
+    // This is cache-first, good for app shell, maybe not for dynamic data
     event.respondWith(
         caches.match(event.request)
             .then(response => {
-                // Cache hit - return response
-                if (response) {
-                    // console.log('Service Worker: Serving from cache:', event.request.url);
-                    return response;
-                }
-
-                // Not in cache - fetch from network
-                // console.log('Service Worker: Fetching from network:', event.request.url);
-                return fetch(event.request).then(
-                    networkResponse => {
-                        // Optional: Cache dynamically fetched resources if needed (e.g., CDNs)
-                        // Be careful what you cache here.
-                        /* if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') { // Only cache valid, same-origin responses by default
-                            const responseToCache = networkResponse.clone();
-                            caches.open(CACHE_NAME).then(cache => {
-                                cache.put(event.request, responseToCache);
-                            });
-                        } */
-                        return networkResponse;
-                    }
-                ).catch(error => {
-                    console.error('Service Worker: Fetch failed; returning offline page or error response.', error);
-                    // Optional: Return a custom offline page if fetch fails and it's a navigation request
-                    // if (event.request.mode === 'navigate') {
-                    //     return caches.match('/offline.html');
-                    // }
-                });
+                // Return cache hit, or fetch from network
+                return response || fetch(event.request);
+            })
+            .catch(error => {
+                 console.error('SW Fetch error:', event.request.url, error);
+                 // Consider returning a custom offline response or just letting the browser handle the error
             })
     );
 });
@@ -97,103 +85,131 @@ self.addEventListener('fetch', event => {
 // --- Message Handling for Timer ---
 
 self.addEventListener('message', event => {
-    console.log('Service Worker: Received message', event.data);
+    console.log('SW Received message:', event.data); // *** DEBUG: See if message arrives ***
 
     if (event.data && event.data.type === 'SCHEDULE_REST_END') {
         const endTime = event.data.endTime;
         const now = Date.now();
-        const delay = Math.max(0, endTime - now); // Ensure delay isn't negative
+        const delay = Math.max(0, endTime - now);
 
-        console.log(`Service Worker: Scheduling notification for endTime: ${new Date(endTime).toLocaleTimeString()}, delay: ${delay}ms`);
+        console.log(`SW Scheduling notification for: ${new Date(endTime).toLocaleTimeString()} (Delay: ${delay}ms)`); // *** DEBUG: Log schedule time ***
 
-        // Clear any previous timer notification attempts (important!)
+        // Clear any previous timer attempts
         clearTimeout(activeTimerTimeoutId);
+        activeTimerTimeoutId = null;
         self.registration.getNotifications({ tag: 'rest-timer-notification' })
             .then(notifications => {
-                notifications.forEach(notification => notification.close());
-            });
+                 if(notifications && notifications.length > 0) {
+                    console.log(`SW Closing ${notifications.length} previous notifications.`);
+                    notifications.forEach(notification => notification.close());
+                 }
+            }).catch(err => console.error("SW Error closing old notifications:", err));
 
+        // Check Notification permission *within* the worker before attempting
+        // Important: self.Notification might not be available in all SW contexts,
+        // but permission check SHOULD happen before sending message ideally.
+        // Relying on the main thread check might be more robust.
+        // Let's assume main thread checked, but add a log here.
+         if (typeof self.Notification !== 'undefined' && self.Notification.permission !== 'granted') {
+             console.warn("SW: Notification permission state checked in SW is NOT 'granted'. This notification may fail."); // *** DEBUG: Log permission issue ***
+             // Decide if you still want to attempt setTimeout as a silent fallback
+             // scheduleWithTimeout(delay); // Maybe comment this out if permissions denied
+             // return; // Optionally exit early
+         }
 
-        // **Method 1: Using showTrigger (Preferred, check compatibility)**
+        // **Attempt TimestampTrigger**
         if ('showTrigger' in Notification.prototype && 'TimestampTrigger' in self) {
-            console.log('Service Worker: Using TimestampTrigger');
-             self.registration.showNotification("FitTrack: Rest Over!", {
+            console.log('SW: TimestampTrigger API is supported. Attempting to use it.'); // *** DEBUG: Log attempt ***
+            self.registration.showNotification("FitTrack: Rest Over!", {
                 body: "Time's up! Let's get back to the workout.",
-                icon: '/icons/icon-192x192.png',
-                badge: '/icons/badge-72x72.png', // Optional: Shows on Android
-                tag: 'rest-timer-notification',    // Groups notifications
-                vibrate: [200, 100, 200],          // Optional vibration pattern
-                showTrigger: new TimestampTrigger(endTime) // Schedule it!
+                icon: 'icons/icon-192x192.png', // Use relative path
+                badge: 'icons/badge-72x72.png', // Use relative path
+                tag: 'rest-timer-notification', // Groups notifications, replaces previous one
+                renotify: true, // Vibrate/sound even if replacing previous tag (useful if user misses first)
+                vibrate: [200, 100, 200], // Optional vibration
+                showTrigger: new TimestampTrigger(endTime)
+            }).then(() => {
+                console.log('SW: TimestampTrigger notification scheduled successfully.'); // *** DEBUG: Log success ***
             }).catch(err => {
-                console.error("Service Worker: Error scheduling notification with trigger:", err);
-                // Maybe try setTimeout fallback here if trigger fails?
+                console.error("SW: ERROR scheduling notification with TimestampTrigger:", err); // *** DEBUG: Log specific error ***
+                console.warn("SW: Falling back to setTimeout due to TimestampTrigger error."); // *** DEBUG: Log fallback ***
                 scheduleWithTimeout(delay);
             });
         } else {
-            // **Method 2: Fallback using setTimeout (Less reliable if SW is terminated)**
-             console.warn('Service Worker: showTrigger not supported or available, using setTimeout fallback.');
-             scheduleWithTimeout(delay);
+            // **Fallback using setTimeout**
+            console.warn('SW: TimestampTrigger API *not* supported or available. Using setTimeout fallback.'); // *** DEBUG: Log unsupported ***
+            scheduleWithTimeout(delay);
         }
     }
-     else if (event.data && event.data.type === 'CANCEL_REST_TIMER') {
-        console.log('Service Worker: Received cancel request.');
-        // Clear the setTimeout if it was used
-         if (activeTimerTimeoutId) {
-            console.log('Service Worker: Clearing active setTimeout.');
+    else if (event.data && event.data.type === 'CANCEL_REST_TIMER') {
+        console.log('SW: Received CANCEL_REST_TIMER message.'); // *** DEBUG: Log cancel ***
+        if (activeTimerTimeoutId) {
+            console.log('SW: Clearing active setTimeout ID:', activeTimerTimeoutId);
             clearTimeout(activeTimerTimeoutId);
             activeTimerTimeoutId = null;
-         }
-        // Close any potentially scheduled or showing notification with the tag
-         self.registration.getNotifications({ tag: 'rest-timer-notification' })
+        }
+        // Close any potentially showing/scheduled notification with the tag
+        self.registration.getNotifications({ tag: 'rest-timer-notification' })
             .then(notifications => {
-                notifications.forEach(notification => notification.close());
-                console.log('Service Worker: Closed existing notifications with tag.');
-            });
-        // Note: Reliably cancelling a future TimestampTrigger notification isn't straightforward.
-        // Closing existing ones and clearing setTimeout is the best effort.
+                if (notifications && notifications.length > 0) {
+                    console.log('SW: Closing existing notifications with tag on cancel.');
+                    notifications.forEach(notification => notification.close());
+                }
+            }).catch(err => console.error("SW Error closing notifications on cancel:", err));
+        // Note: Reliably cancelling a future TimestampTrigger isn't possible,
+        // but closing existing ones prevents duplicates if cancel is hit late.
     }
 });
 
 function scheduleWithTimeout(delay) {
+    // Ensure delay is reasonable, setTimeout has limits
+    if (delay > 2**31 - 1) { // Max delay approx 24.8 days
+        console.warn(`SW: Requested setTimeout delay (${delay}ms) exceeds maximum, capping.`);
+        delay = 2**31 - 1;
+    }
+    console.log(`SW: Scheduling setTimeout with delay: ${delay}ms`); // *** DEBUG: Log setTimeout schedule ***
     activeTimerTimeoutId = setTimeout(() => {
-        console.log('Service Worker: setTimeout triggered notification');
+        console.log('SW: setTimeout timer fired!'); // *** DEBUG: Log firing ***
         self.registration.showNotification("FitTrack: Rest Over!", {
             body: "Time's up! Let's get back to the workout.",
-            icon: '/icons/icon-192x192.png',
-            badge: '/icons/badge-72x72.png',
+            icon: 'icons/icon-192x192.png', // Use relative path
+            badge: 'icons/badge-72x72.png', // Use relative path
             tag: 'rest-timer-notification',
+            renotify: true,
             vibrate: [200, 100, 200]
-        });
+        }).catch(err => console.error("SW: Error showing notification from setTimeout:", err));
         activeTimerTimeoutId = null; // Clear the ID after firing
-     }, delay);
-     console.log(`Service Worker: setTimeout scheduled with ID: ${activeTimerTimeoutId}`);
+    }, delay);
+    console.log(`SW: setTimeout scheduled with ID: ${activeTimerTimeoutId}`);
 }
 
 
 // --- Notification Click Handling ---
-
 self.addEventListener('notificationclick', event => {
-    console.log('Service Worker: Notification clicked.');
+    console.log('SW: Notification clicked.');
     const clickedNotification = event.notification;
     clickedNotification.close(); // Close the notification
 
-    // Action to take: Focus existing window or open a new one
+    // Action: Focus existing window or open a new one
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-            // Check if there's already a window open for this origin
+            // Check if there's already a window open for this origin+scope
             for (let i = 0; i < windowClients.length; i++) {
                 const client = windowClients[i];
-                // Adjust the URL check if your start_url is different
+                // Make URL check more robust for different base paths if needed
                 if (client.url.startsWith(self.location.origin) && 'focus' in client) {
-                    console.log('Service Worker: Focusing existing client window.');
+                    console.log('SW: Focusing existing client window.');
                     return client.focus();
                 }
             }
-            // If no window is open, open a new one
+            // If no window is open, open a new one to the root/start_url
             if (clients.openWindow) {
-                console.log('Service Worker: Opening new client window.');
-                return clients.openWindow('/'); // Open the root page
+                console.log('SW: Opening new client window.');
+                return clients.openWindow('.'); // Open root relative to SW scope
             }
+        })
+        .catch(error => {
+            console.error('SW: Error handling notification click:', error);
         })
     );
 });
