@@ -1,3 +1,4 @@
+```json
 {
   "name": "FitTrack - Your Fitness Companion",
   "short_name": "FitTrack",
@@ -10,28 +11,19 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icons/icon-180x180.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png",  // Main app icon
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any maskable"       // Use as primary icon for install/display
     },
     {
-      "src": "icons/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-       "src": "icons/badge-72x72.png",
+       "src": "icons/badge-72x72.png",   // Icon for notifications (badge)
        "sizes": "72x72",
        "type": "image/png",
-       "purpose": "badge"
+       "purpose": "badge"              // Explicitly mark as badge
     }
   ]
 }
+```
+
+---
