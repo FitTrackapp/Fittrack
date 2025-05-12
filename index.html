@@ -13,7 +13,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- Existing Styles (Keep these) --- */
+        /* --- Main Styles --- */
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1f2937; margin: 0; }
         ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 10px; } ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 10px; } ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
         .content-section { background-color: white; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb; }
@@ -43,79 +43,17 @@
         #closeSettingsModalBtn:hover, #closeSummaryModalBtn:hover { background-color: rgba(0,0,0,0.05); color: #4b5563; }
         #closeSettingsModalBtn svg, #closeSummaryModalBtn svg { display: block; }
 
-        /* ---- NEW/MODIFIED STYLES FOR APP LAYOUT & BOTTOM NAVIGATION ---- */
-        html, body {
-            height: 100%;
-            overflow: hidden; /* Prevent body scroll when appContainer handles it */
-        }
-        #appContainer {
-            display: flex;
-            flex-direction: column;
-            height: 100%; /* Use 100% of parent (body) */
-            padding-top: constant(safe-area-inset-top);
-            padding-top: env(safe-area-inset-top);
-            /* Bottom padding for nav bar is handled by its own safe area */
-        }
-        #appHeader {
-            flex-shrink: 0;
-            position: sticky; /* Keep header at the top on scroll */
-            top: 0; /* Default sticky position */
-            z-index: 10; /* Ensure header is above scrolled content */
-            /* Adjust sticky top for iOS safe area */
-            top: constant(safe-area-inset-top);
-            top: env(safe-area-inset-top);
-        }
-        #mainAppContentWrapper {
-            flex-grow: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        #mainAppContentWrapper > main {
-             padding-bottom: 1rem; /* Space at the very end of content if needed */
-        }
-        #bottomNavBar {
-            background-color: #f8fafc; /* Tailwind gray-50 */
-            border-top: 1px solid #e2e8f0; /* Tailwind gray-200 */
-            box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-around;
-            align-items: stretch; /* Make buttons fill height */
-            height: 60px; /* Adjust as needed */
-            flex-shrink: 0;
-            padding-bottom: constant(safe-area-inset-bottom);
-            padding-bottom: env(safe-area-inset-bottom);
-            position: sticky; /* Stick to bottom within #appContainer */
-            bottom: 0;
-            z-index: 10; /* Ensure above content if overlap occurs */
-        }
-        .nav-button {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0.25rem 0.1rem;
-            font-size: 0.6rem;
-            color: #64748b; /* Tailwind slate-500 */
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            transition: color 0.2s ease-in-out;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .nav-button svg {
-            width: 1.375rem; /* 22px */
-            height: 1.375rem; /* 22px */
-            margin-bottom: 2px;
-        }
-        .nav-button.active {
-            color: #1e293b; /* Tailwind slate-800 or your primary app color */
-        }
-        .nav-button:hover:not(.active) {
-            color: #334155; /* Tailwind slate-700 */
-        }
-
+        /* --- App Layout & Bottom Navigation --- */
+        html, body { height: 100%; overflow: hidden; }
+        #appContainer { display: flex; flex-direction: column; height: 100%; padding-top: constant(safe-area-inset-top); padding-top: env(safe-area-inset-top); }
+        #appHeader { flex-shrink: 0; position: sticky; top: 0; z-index: 10; top: constant(safe-area-inset-top); top: env(safe-area-inset-top); }
+        #mainAppContentWrapper { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        #mainAppContentWrapper > main { padding-bottom: 1rem; }
+        #bottomNavBar { background-color: #f8fafc; border-top: 1px solid #e2e8f0; box-shadow: 0 -1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: stretch; height: 60px; flex-shrink: 0; padding-bottom: constant(safe-area-inset-bottom); padding-bottom: env(safe-area-inset-bottom); position: sticky; bottom: 0; z-index: 10; }
+        .nav-button { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.25rem 0.1rem; font-size: 0.6rem; color: #64748b; background-color: transparent; border: none; cursor: pointer; text-align: center; transition: color 0.2s ease-in-out; -webkit-tap-highlight-color: transparent; }
+        .nav-button svg { width: 1.375rem; height: 1.375rem; margin-bottom: 2px; }
+        .nav-button.active { color: #1e293b; }
+        .nav-button:hover:not(.active) { color: #334155; }
     </style>
 </head>
 <body class="text-gray-800">
@@ -131,7 +69,6 @@
     </div>
 
     <div id="appContainer" class="truly-hidden">
-        <!-- Header -->
         <header id="appHeader" class="bg-gray-800 text-white p-4 sm:p-6 shadow-lg">
             <div class="container mx-auto max-w-4xl flex justify-between items-center">
                <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">FitTrack</h1>
@@ -141,7 +78,6 @@
            </div>
         </header>
 
-        <!-- Scrollable Main Content Area -->
         <div id="mainAppContentWrapper">
             <div id="currentDayInfo" class="container mx-auto max-w-4xl p-4 md:px-6 text-center text-sm text-gray-600 font-medium"></div>
             <div id="minimizedTimerBar" class="container mx-auto max-w-4xl truly-hidden rounded-md">
@@ -156,7 +92,6 @@
 
             <main class="container mx-auto max-w-4xl p-4 md:p-6 pt-0 md:pt-0 space-y-8">
                 <section id="activeWorkoutSection" class="content-section p-6 md:p-8 truly-hidden">
-                    <!-- Active Workout Section Content (as before) -->
                      <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-gray-900">Active Workout</h2><button id="showCancelDayConfirmationBtn" class="btn btn-danger-app btn-small py-1 px-2">Cancel Day</button></div>
                      <div id="activeExerciseInfo" class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200"><h3 id="activeExerciseNameDisplay" class="text-xl font-semibold text-gray-800">Exercise Name</h3><p id="activeExerciseTargetsDisplay" class="text-sm text-gray-600">Target: X sets of Y reps</p><p id="currentExerciseInDayDisplay" class="text-xs text-gray-500 mt-1">Exercise X of Y for the day</p><p id="workoutDurationDisplay" class="text-sm text-gray-600 mt-1 font-medium">Session Duration: 00:00</p></div>
                      <div class="space-y-4"><div><label for="activeWorkoutDate" class="block text-sm font-medium text-gray-700">Workout Date</label><input type="date" id="activeWorkoutDate" name="activeWorkoutDate" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm text-gray-800"></div><div id="weightInputGroup"><label for="activeWeightInput" class="block text-sm font-medium text-gray-700 mb-1">Weight (<span id="activeUnitDisplayValue" class="text-gray-700">kg</span>)</label><input type="number" id="activeWeightInput" inputmode="decimal" min="0" step="0.1" value="0" class="number-input-slick mt-1"></div><div id="unitInputGroup"><label for="activeUnitInput" class="block text-sm font-medium text-gray-700">Unit</label><select id="activeUnitInput" class="select-slick mt-1"><option value="kg">kg</option><option value="lbs">lbs</option></select></div><div id="durationInputGroup" class="truly-hidden"><label for="activeDurationInput" id="activeDurationLabel" class="block text-sm font-medium text-gray-700 mb-1">Duration (seconds)</label><input type="number" id="activeDurationInput" inputmode="numeric" min="1" step="1" value="30" class="number-input-slick mt-1"></div><div id="rpeInputGroup" class="truly-hidden"><label for="activeRpeSelect" class="block text-sm font-medium text-gray-700">Perceived Exertion (RPE)</label><select id="activeRpeSelect" class="select-slick mt-1"><option value="">- Select RPE -</option><option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Hard">Hard</option><option value="Extreme">Extreme</option></select></div><p id="activeSetDisplay" class="text-md font-medium text-gray-700 text-center my-2">Set: 1 / 3</p><div><label for="activeNotesInput" class="block text-sm font-medium text-gray-700">Notes (optional)</label><textarea id="activeNotesInput" rows="2" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm text-gray-800" placeholder="e.g., Felt strong, focus on form..."></textarea></div><div class="flex space-x-3 mt-6"><button id="logSetButton" class="flex-1 btn btn-primary-app font-semibold py-2 px-4 rounded-md shadow-md">Log Set & Rest</button><button id="finishExerciseButton" class="flex-1 btn btn-success-app font-semibold py-2 px-4 rounded-md shadow-md">Finish Exercise & Next</button></div></div>
@@ -193,14 +128,13 @@
                      <div class="accordion-item border border-gray-200 rounded-lg shadow-sm"><button id="toggleMuscleFocusBtn" class="accordion-button w-full flex justify-between items-center p-4 text-left"><span class="font-medium">Muscle Group Focus (Based on PBs)</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div id="muscleGroupPbsList" class="accordion-content p-4 space-y-4"><p class="text-gray-500 italic">Log workouts to see.</p></div></div>
                 </section>
             </main>
-             <footer class="text-center p-6 text-gray-600 text-sm"> <!-- Moved footer inside scrollable area -->
-                <p>© <span id="currentYear"></span> FitTrack. Keep Pushing!</p>
+             <footer class="text-center p-6 text-gray-600 text-sm">
+                <p>&copy; <span id="currentYear"></span> FitTrack. Keep Pushing!</p>
             </footer>
-        </div> <!-- End mainAppContentWrapper -->
+        </div>
 
-        <!-- Bottom Navigation Bar -->
         <nav id="bottomNavBar">
-            <button id="showRoutinesBtnNav" class="nav-button active"> <!-- Added Nav suffix to avoid ID clash if old buttons still exist -->
+            <button id="showRoutinesBtnNav" class="nav-button active">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" /></svg>
                 <span>Routines</span>
             </button>
@@ -221,12 +155,10 @@
                 <span>Progress</span>
             </button>
         </nav>
-    </div> <!-- End appContainer -->
+    </div>
 
-    <!-- Modals (Keep as is) -->
     <div id="settingsModal" class="truly-hidden">
         <div id="settingsModalContent">
-            <!-- Settings Modal content as before, including the improved close button -->
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-semibold text-gray-900">Settings</h2>
                 <button id="closeSettingsModalBtn">
@@ -235,7 +167,6 @@
                     </svg>
                 </button>
             </div>
-            <!-- Timer Settings -->
             <div class="mb-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Timer Settings</h3>
                 <p class="text-sm text-gray-600 mb-4">Set your default rest period duration.</p>
@@ -249,14 +180,12 @@
                 </div>
             </div>
             <hr class="my-6 border-gray-200">
-            <!-- Notifications -->
             <div class="mb-6">
                  <h3 class="text-lg font-medium text-gray-900 mb-2">Notifications</h3>
                  <button id="requestNotificationPermissionBtn" class="btn btn-primary-app w-full py-2.5">Request Notification Permission</button>
                  <p id="notificationPermissionStatus" class="text-xs text-gray-500 mt-2"></p>
             </div>
             <hr class="my-6 border-gray-200">
-            <!-- Data Management -->
             <div class="mb-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Data Management</h3>
                 <button id="exportDataBtn" class="btn btn-primary-app w-full py-2.5 mb-3">Export All App Data</button>
@@ -267,7 +196,6 @@
                 </div>
             </div>
             <hr class="my-6 border-gray-200">
-            <!-- Reset App Data -->
             <div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Reset App Data</h3>
                 <p class="text-sm text-gray-600 mb-3">This will delete all logged workouts and reset timer settings to default.</p>
@@ -278,31 +206,17 @@
                 </div>
             </div>
             <p id="settingsFeedback" class="text-sm mt-4 h-5"></p>
-            <!-- Optional Done Button for Settings Modal -->
             <div class="mt-8 flex justify-end">
                 <button id="doneSettingsModalBtn" class="btn btn-primary-app py-2 px-4">Done</button>
             </div>
         </div>
     </div>
-    <div id="cancelDayConfirmationModal" class="truly-hidden"> <!-- Keep as is --> </div>
-    <div id="workoutSummaryModal" class="truly-hidden"> <!-- Keep as is --> </div>
-    <div id="fullscreenTimerOverlay" class="truly-hidden"> <!-- Keep as is --> </div>
+    <div id="cancelDayConfirmationModal" class="truly-hidden"><div id="cancelDayConfirmationModalContent"><h2 class="text-xl font-semibold text-gray-900 mb-4">Cancel Workout Day?</h2><p class="text-sm text-gray-600 mb-6">Are you sure you want to cancel the current workout day? Any unsaved progress for the current exercise will be lost.</p><div class="flex justify-end space-x-3"><button id="confirmCancelDayBtn" class="btn btn-danger-app">Yes, Cancel Day</button><button id="dontCancelDayBtn" class="btn btn-primary-app">No, Continue</button></div></div></div>
+    <div id="workoutSummaryModal" class="truly-hidden"><div id="workoutSummaryModalContent"><div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-gray-900" id="summaryModalTitle">Workout Completed!</h2><button id="closeSummaryModalBtn"><svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></button></div><div id="summaryModalBody" class="text-sm text-gray-600 space-y-2"><p>Total Exercises: <span id="summaryTotalExercises" class="font-medium text-gray-700">0</span></p><p>Total Sets Logged: <span id="summaryTotalSets" class="font-medium text-gray-700">0</span></p><p>Session Duration: <span id="summarySessionDuration" class="font-medium text-gray-700">00:00</span></p><p class="mt-4 font-semibold text-green-600">Great work, Nathan! Keep it up!</p></div><div class="mt-6 flex justify-end"><button id="okSummaryModalBtn" class="btn btn-success-app">Great!</button></div></div></div>
+    <div id="fullscreenTimerOverlay" class="truly-hidden"><div id="timerDisplayFullscreen" class="text-7xl sm:text-8xl font-bold text-white">00:00</div><div id="fullscreenTimerControls" class="mt-6"><button id="fullscreenPauseResumeBtn" class="btn btn-icon p-3"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20" id="fullscreenPlayIcon"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg><svg class="w-7 h-7 truly-hidden" fill="currentColor" viewBox="0 0 20 20" id="fullscreenPauseIcon"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button><button id="fullscreenAdd15sBtn" class="btn btn-primary-app btn-text-icon font-semibold p-3" title="+15 Seconds">+15s</button><button id="fullscreenStopBtn" class="btn btn-danger-app btn-icon p-3" title="Stop Rest & Workout"><svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" /></svg></button><button id="fullscreenMinimizeBtn" class="btn btn-primary-app btn-icon p-3" title="Minimize Timer"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-4l-7 7-7-7" /></svg></button></div></div>
 
     <script>
         // --- START OF JAVASCRIPT LOGIC ---
-        // All your previous JavaScript code goes here.
-        // Make sure to update the event listeners for the navigation buttons.
-        // Example for updating event listeners:
-        // const showRoutinesBtn = document.getElementById('showRoutinesBtn'); -> NO, this was old
-        // const showRoutinesBtnNav = document.getElementById('showRoutinesBtnNav'); // NEW ID
-        // if (showRoutinesBtnNav) showRoutinesBtnNav.addEventListener('click', () => toggleView('routines'));
-        // Do this for all 5 navigation buttons.
-        //
-        // The content of the script tag from the previous "Full code for each section"
-        // should be placed here, with the event listener ID updates for the nav buttons.
-        // I'll include the full script from the previous message here for completeness.
-        // (This is the same script as before, just ensure your button IDs match if you changed them in HTML)
-        // --- SCRIPT FROM PREVIOUS RESPONSE ---
         try {
             console.log("FitTrack Script: Starting execution.");
 
@@ -347,7 +261,7 @@
                 const settingsCogButton = document.getElementById('settingsCogButton');
                 const settingsModal = document.getElementById('settingsModal');
                 const closeSettingsModalBtn = document.getElementById('closeSettingsModalBtn');
-                const doneSettingsModalBtn = document.getElementById('doneSettingsModalBtn'); // For settings "Done" button
+                const doneSettingsModalBtn = document.getElementById('doneSettingsModalBtn');
                 const settingsTimerMinutesInput = document.getElementById('settingsTimerMinutes');
                 const settingsTimerSecondsInput = document.getElementById('settingsTimerSeconds');
                 const saveTimerSettingsBtn = document.getElementById('saveTimerSettingsBtn');
@@ -387,14 +301,12 @@
                 const minimizedAdd15sBtn = document.getElementById('minimizedAdd15sBtn');
                 const minimizedStopBtn = document.getElementById('minimizedStopBtn');
                 const minimizedMaximizeBtn = document.getElementById('minimizedMaximizeBtn');
-                // Navigation Buttons - use new IDs
-                const bottomNavBar = document.getElementById('bottomNavBar'); // Parent for delegation or direct targeting
+                const bottomNavBar = document.getElementById('bottomNavBar');
                 const showRoutinesBtnNav = document.getElementById('showRoutinesBtnNav');
                 const showLogBtnNav = document.getElementById('showLogBtnNav');
                 const showCalendarBtnNav = document.getElementById('showCalendarBtnNav');
                 const showBodyWeightBtnNav = document.getElementById('showBodyWeightBtnNav');
                 const progressBtnNav = document.getElementById('progressBtnNav');
-
                 const workoutRoutinesSection = document.getElementById('workout-routines-section');
                 const workoutListSection = document.getElementById('workout-list-section');
                 const bodyWeightSection = document.getElementById('body-weight-section');
@@ -422,13 +334,7 @@
                 let isTimerMinimized = false;
 
                 // --- Workout Routines Data ---
-                const workoutRoutinesData = [
-                    { day: "Day 1: Chest & Triceps", exercises: [ { name: "Barbell Bench Press (or dumbbell)", sets: 3, reps: "10-12", why: "Primary chest builder...", muscleGroup: "Chest", type: "weight" }, { name: "Incline Dumbbell Press", sets: 3, reps: "10-12", why: "Targets upper chest...", muscleGroup: "Chest", type: "weight" }, { name: "Dumbbell Flyes (or band chest fly)", sets: 2, reps: "12-15", why: "Isolates chest muscles...", muscleGroup: "Chest", type: "weight" }, { name: "Overhead Tricep Extension (dumbbell/band)", sets: 3, reps: "12", why: "Works all three heads of triceps...", muscleGroup: "Triceps", type: "weight" }, { name: "Tricep Dips (bench/parallel bars)", sets: 2, reps: "10-12", why: "Compound tricep movement...", muscleGroup: "Triceps", type: "weight" } ]},
-                    { day: "Day 2: Back & Biceps", exercises: [ { name: "Bent-Over Dumbbell Row", sets: 3, reps: "10-12", why: "Builds back thickness...", muscleGroup: "Back", type: "weight" }, { name: "Assisted Pull-Ups (or inverted rows)", sets: 3, reps: "8-10", why: "Excellent for back width...", muscleGroup: "Back", type: "weight" }, { name: "Lat Pulldown (or extra dumbbell row)", sets: 3, reps: "10-12", why: "Mimics pull-ups...", muscleGroup: "Back", type: "weight" }, { name: "Dumbbell Bicep Curl", sets: 3, reps: "12", why: "Classic bicep builder...", muscleGroup: "Biceps", type: "weight" }, { name: "Hammer Curls (dumbbells/bands)", sets: 2, reps: "12-15", why: "Targets brachialis...", muscleGroup: "Biceps", type: "weight" } ]},
-                    { day: "Day 3: Legs & Glutes", exercises: [ { name: "Leg Press (machine or dumbbell sumo squat)", sets: 3, reps: "10-12", why: "Targets quads, glutes...", muscleGroup: "Legs", type: "weight" }, { name: "Seated Leg Curl (machine or dumbbell stiff-leg deadlift)", sets: 3, reps: "12", why: "Focuses on hamstrings...", muscleGroup: "Hamstrings", type: "weight" }, { name: "Leg Extension (machine or bodyweight step-ups)", sets: 3, reps: "10-12", why: "Isolates quads...", muscleGroup: "Quads", type: "weight" }, { name: "Hip Thrust (barbell or dumbbell)", sets: 3, reps: "12-15", why: "Glute-focused...", muscleGroup: "Glutes", type: "weight" }, { name: "Seated Calf Raise (machine or dumbbell)", sets: 2, reps: "15-20", why: "Isolates calves...", muscleGroup: "Calves", type: "weight" } ]},
-                    { day: "Day 4: Shoulders & Core", exercises: [ { name: "Seated Dumbbell Shoulder Press", sets: 3, reps: "10-12", why: "Builds shoulder mass...", muscleGroup: "Shoulders", type: "weight" }, { name: "Lateral Raises (dumbbells/bands)", sets: 3, reps: "12-15", why: "Isolates medial deltoids...", muscleGroup: "Shoulders", type: "weight" }, { name: "Front Raises (dumbbells/bands)", sets: 2, reps: "12", why: "Targets anterior deltoids...", muscleGroup: "Shoulders", type: "weight" }, { name: "Plank", sets: 3, reps: "20-30 sec", why: "Core stability... Reps = seconds for timed.", muscleGroup: "Core", type: "timed" }, { name: "Russian Twists (with/without weight)", sets: 3, reps: "15 reps/side", why: "Targets obliques...", muscleGroup: "Core", type: "weight" } ]},
-                    { day: "Day 5: Full-Body", exercises: [ { name: "Bodyweight Squats", sets: 3, reps: "12-15", why: "Fundamental compound movement...", muscleGroup: "Legs", type: "weight" }, { name: "Barbell Bench Press (or dumbbell)", sets: 3, reps: "10-12", why: "Primary chest builder...", muscleGroup: "Chest", type: "weight" }, { name: "Single-Arm Dumbbell Row", sets: 3, reps: "10 reps/arm", why: "Unilateral back exercise...", muscleGroup: "Back", type: "weight" }, { name: "Dumbbell Shoulder Press", sets: 2, reps: "10-12", why: "Compound shoulder exercise...", muscleGroup: "Shoulders", type: "weight" }, { name: "Bicycle Crunches", sets: 3, reps: "15 reps/side", why: "Effective core exercise...", muscleGroup: "Core", type: "reps" } ]}
-                ];
+                const workoutRoutinesData = [ { day: "Day 1: Chest & Triceps", exercises: [ { name: "Barbell Bench Press (or dumbbell)", sets: 3, reps: "10-12", why: "Primary chest builder...", muscleGroup: "Chest", type: "weight" }, { name: "Incline Dumbbell Press", sets: 3, reps: "10-12", why: "Targets upper chest...", muscleGroup: "Chest", type: "weight" }, { name: "Dumbbell Flyes (or band chest fly)", sets: 2, reps: "12-15", why: "Isolates chest muscles...", muscleGroup: "Chest", type: "weight" }, { name: "Overhead Tricep Extension (dumbbell/band)", sets: 3, reps: "12", why: "Works all three heads of triceps...", muscleGroup: "Triceps", type: "weight" }, { name: "Tricep Dips (bench/parallel bars)", sets: 2, reps: "10-12", why: "Compound tricep movement...", muscleGroup: "Triceps", type: "weight" } ]}, { day: "Day 2: Back & Biceps", exercises: [ { name: "Bent-Over Dumbbell Row", sets: 3, reps: "10-12", why: "Builds back thickness...", muscleGroup: "Back", type: "weight" }, { name: "Assisted Pull-Ups (or inverted rows)", sets: 3, reps: "8-10", why: "Excellent for back width...", muscleGroup: "Back", type: "weight" }, { name: "Lat Pulldown (or extra dumbbell row)", sets: 3, reps: "10-12", why: "Mimics pull-ups...", muscleGroup: "Back", type: "weight" }, { name: "Dumbbell Bicep Curl", sets: 3, reps: "12", why: "Classic bicep builder...", muscleGroup: "Biceps", type: "weight" }, { name: "Hammer Curls (dumbbells/bands)", sets: 2, reps: "12-15", why: "Targets brachialis...", muscleGroup: "Biceps", type: "weight" } ]}, { day: "Day 3: Legs & Glutes", exercises: [ { name: "Leg Press (machine or dumbbell sumo squat)", sets: 3, reps: "10-12", why: "Targets quads, glutes...", muscleGroup: "Legs", type: "weight" }, { name: "Seated Leg Curl (machine or dumbbell stiff-leg deadlift)", sets: 3, reps: "12", why: "Focuses on hamstrings...", muscleGroup: "Hamstrings", type: "weight" }, { name: "Leg Extension (machine or bodyweight step-ups)", sets: 3, reps: "10-12", why: "Isolates quads...", muscleGroup: "Quads", type: "weight" }, { name: "Hip Thrust (barbell or dumbbell)", sets: 3, reps: "12-15", why: "Glute-focused...", muscleGroup: "Glutes", type: "weight" }, { name: "Seated Calf Raise (machine or dumbbell)", sets: 2, reps: "15-20", why: "Isolates calves...", muscleGroup: "Calves", type: "weight" } ]}, { day: "Day 4: Shoulders & Core", exercises: [ { name: "Seated Dumbbell Shoulder Press", sets: 3, reps: "10-12", why: "Builds shoulder mass...", muscleGroup: "Shoulders", type: "weight" }, { name: "Lateral Raises (dumbbells/bands)", sets: 3, reps: "12-15", why: "Isolates medial deltoids...", muscleGroup: "Shoulders", type: "weight" }, { name: "Front Raises (dumbbells/bands)", sets: 2, reps: "12", why: "Targets anterior deltoids...", muscleGroup: "Shoulders", type: "weight" }, { name: "Plank", sets: 3, reps: "20-30 sec", why: "Core stability... Reps = seconds for timed.", muscleGroup: "Core", type: "timed" }, { name: "Russian Twists (with/without weight)", sets: 3, reps: "15 reps/side", why: "Targets obliques...", muscleGroup: "Core", type: "weight" } ]}, { day: "Day 5: Full-Body", exercises: [ { name: "Bodyweight Squats", sets: 3, reps: "12-15", why: "Fundamental compound movement...", muscleGroup: "Legs", type: "weight" }, { name: "Barbell Bench Press (or dumbbell)", sets: 3, reps: "10-12", why: "Primary chest builder...", muscleGroup: "Chest", type: "weight" }, { name: "Single-Arm Dumbbell Row", sets: 3, reps: "10 reps/arm", why: "Unilateral back exercise...", muscleGroup: "Back", type: "weight" }, { name: "Dumbbell Shoulder Press", sets: 2, reps: "10-12", why: "Compound shoulder exercise...", muscleGroup: "Shoulders", type: "weight" }, { name: "Bicycle Crunches", sets: 3, reps: "15 reps/side", why: "Effective core exercise...", muscleGroup: "Core", type: "reps" } ]} ];
 
                 // --- Utility Functions ---
                 function showUserFeedback(element, message, type, duration = 3000) { if (!element) { console.warn("showUserFeedback: Target element not found for message:", message); return; } element.textContent = message; element.className = `text-sm mt-4 ${type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-500' : 'text-gray-600'}`; if (duration > 0) { setTimeout(() => { if (element.textContent === message) { element.textContent = ''; element.className = 'text-sm mt-4 h-5'; } }, duration); } }
@@ -443,143 +349,156 @@
                 function saveCompletedDays(completedDays) { localStorage.setItem('fitTrackCompletedDays', JSON.stringify(completedDays)); }
 
                 // --- Accordion / Rendering Functions ---
-                function setupAccordionToggle(buttonEl, contentEl, startOpen = false) { /* ... */ }
-                function renderLoggedWorkoutsAccordion() { /* ... */ }
-                window.deleteWorkout = function(workoutId) { /* ... */ }
-                function renderWorkoutRoutines() { /* ... */ }
-                function renderWeeklyCalendarView() { /* ... */ }
-                window.handleMarkDayAsDone = function(dateString, isChecked) { /* ... */ }
-                function renderBodyWeightLog() { /* ... */ }
-                window.deleteBodyWeightEntry = function(entryId) { /* ... */ }
-                function renderProgress() { /* ... */ }
-                // Copy ALL the rendering functions from the previous full script here
+                function setupAccordionToggle(buttonEl, contentEl, startOpen = false) { if (!buttonEl || !contentEl) { return; } const svgIcon = buttonEl.querySelector('svg'); function toggle() { const isOpen = contentEl.classList.contains('open'); buttonEl.classList.toggle('open', !isOpen); if (svgIcon) { svgIcon.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)'; } if (!isOpen) { contentEl.classList.add('open'); contentEl.style.maxHeight = contentEl.scrollHeight + 'px'; } else { contentEl.style.maxHeight = '0px'; const transitionEndHandler = () => { if (!buttonEl.classList.contains('open')) { contentEl.classList.remove('open'); } contentEl.removeEventListener('transitionend', transitionEndHandler); }; contentEl.addEventListener('transitionend', transitionEndHandler); } } if (startOpen) { buttonEl.classList.add('open'); contentEl.classList.add('open'); if (svgIcon) svgIcon.style.transform = 'rotate(180deg)'; requestAnimationFrame(() => { if (contentEl.classList.contains('open')) { contentEl.style.maxHeight = contentEl.scrollHeight + 'px'; }}); } else { contentEl.style.maxHeight = '0px'; contentEl.classList.remove('open'); if (svgIcon) svgIcon.style.transform = 'rotate(0deg)'; } buttonEl.addEventListener('click', toggle); }
+                function renderLoggedWorkoutsAccordion() { if (!loggedWorkoutsAccordionEl) return; const workouts = loadWorkouts(); loggedWorkoutsAccordionEl.innerHTML = ''; if (workouts.length === 0) { loggedWorkoutsAccordionEl.innerHTML = '<p class="text-gray-500 italic">No workouts logged yet.</p>'; return; } const workoutsByDate = workouts.reduce((acc, workout) => { const date = workout.date; if (!acc[date]) acc[date] = []; acc[date].push(workout); return acc; }, {}); const sortedDates = Object.keys(workoutsByDate).sort((a, b) => new Date(b) - new Date(a)); if (sortedDates.length === 0) { loggedWorkoutsAccordionEl.innerHTML = '<p class="text-gray-500 italic">No workouts logged yet.</p>'; return; } sortedDates.forEach(date => { const accordionItem = document.createElement('div'); accordionItem.className = 'accordion-item border border-gray-200 rounded-lg shadow-sm'; const button = document.createElement('button'); button.className = 'accordion-button w-full flex justify-between items-center p-4 text-left'; button.innerHTML = `<span class="font-medium">${new Date(date + 'T00:00:00').toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>`; const content = document.createElement('div'); content.className = 'accordion-content'; const workoutListForDate = document.createElement('div'); workoutListForDate.className = 'space-y-3 p-4'; workoutsByDate[date].sort((a,b) => b.id - a.id).forEach(workout => { const workoutItem = document.createElement('div'); workoutItem.className = 'bg-gray-50 p-3 rounded-md border border-gray-100'; let detailsHtml = `<div class="flex justify-between items-start"><h4 class="text-md font-semibold text-gray-700">${workout.exercise}</h4><button onclick="deleteWorkout(${workout.id})" class="btn btn-danger-app btn-small text-xs p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button></div><div class="mt-1 text-sm text-gray-600 grid grid-cols-2 sm:grid-cols-3 gap-2"><span>S: ${workout.sets}</span>`; if (workout.type === 'timed') { detailsHtml += `<span>Duration: ${workout.reps}</span>`; } else if (workout.type === 'reps') { detailsHtml += `<span>R: ${workout.reps}</span>`; } else { detailsHtml += `<span>R: ${workout.reps}</span> <span>W: ${workout.weight} ${workout.unit}</span>`; } detailsHtml += `</div>`; if (workout.rpe) { detailsHtml += `<p class="text-xs text-gray-500 mt-1">RPE: ${workout.rpe}</p>`; } if(workout.notes) { detailsHtml += `<p class="text-xs text-gray-500 mt-2"><em>Notes: ${workout.notes}</em></p>`; } workoutItem.innerHTML = detailsHtml; workoutListForDate.appendChild(workoutItem); }); content.appendChild(workoutListForDate); accordionItem.appendChild(button); accordionItem.appendChild(content); loggedWorkoutsAccordionEl.appendChild(accordionItem); setupAccordionToggle(button, content); }); }
+                window.deleteWorkout = function(workoutId) { let workouts = loadWorkouts(); workouts = workouts.filter(workout => workout.id !== workoutId); saveWorkouts(workouts); renderLoggedWorkoutsAccordion(); renderProgress(); showUserFeedback(activeWorkoutFeedback || settingsFeedback || appHeader, 'Workout deleted.', 'success'); }
+                function renderWorkoutRoutines() { if (!routinesAccordionEl) return; routinesAccordionEl.innerHTML = ''; workoutRoutinesData.forEach((routine, dayIdx) => { const accordionItem = document.createElement('div'); accordionItem.className = 'accordion-item border border-gray-200 rounded-lg shadow-sm'; const button = document.createElement('button'); button.className = 'accordion-button w-full flex justify-between items-center p-4 text-left'; button.innerHTML = `<span class="font-medium">${routine.day}</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>`; const content = document.createElement('div'); content.className = 'accordion-content'; const startDayBtn = document.createElement('button'); startDayBtn.className = 'btn btn-success-app w-full sm:w-auto my-2 mx-3 sm:mx-4'; startDayBtn.textContent = `Start ${routine.day}`; startDayBtn.onclick = () => startDayRoutine(dayIdx); content.appendChild(startDayBtn); const exerciseList = document.createElement('ul'); exerciseList.className = 'space-y-0 px-3 sm:px-4'; if (routine.exercises && routine.exercises.length > 0) { routine.exercises.forEach(exercise => { const listItem = document.createElement('li'); listItem.className = 'py-3 border-t border-gray-200 first:border-t-0'; listItem.innerHTML = `<h4 class="font-semibold text-gray-800">${exercise.name}</h4><p class="text-sm text-gray-600">Sets: ${exercise.sets}, Reps: ${exercise.reps}</p><p class="text-xs text-gray-500 mt-1"><em>Why: ${exercise.why || 'N/A'}</em></p>`; exerciseList.appendChild(listItem); }); } else { const noExercisesItem = document.createElement('li'); noExercisesItem.className = 'py-3 text-sm text-gray-500 italic'; noExercisesItem.textContent = 'No exercises defined for this day.'; exerciseList.appendChild(noExercisesItem); } content.appendChild(exerciseList); accordionItem.appendChild(button); accordionItem.appendChild(content); routinesAccordionEl.appendChild(accordionItem); setupAccordionToggle(button, content); }); }
+                function renderWeeklyCalendarView() { if (!calendarGridEl) return; calendarGridEl.innerHTML = ''; const today = new Date(); const currentDayOfWeek = today.getDay(); const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; const startOfWeek = new Date(today); startOfWeek.setDate(today.getDate() - (currentDayOfWeek === 0 ? 6 : currentDayOfWeek - 1)); startOfWeek.setHours(0,0,0,0); const completedDays = loadCompletedDays(); const restDayIndices = [0, 3]; for (let i = 0; i < 7; i++) { const dayDate = new Date(startOfWeek); dayDate.setDate(startOfWeek.getDate() + i); const dayOfWeekIndex = dayDate.getDay(); const dateString = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`; const dayCell = document.createElement('div'); dayCell.className = 'calendar-day flex flex-col justify-between items-center'; if (completedDays[dateString]) { dayCell.classList.add('completed'); } if (restDayIndices.includes(dayOfWeekIndex)) { dayCell.classList.add('rest-day'); } let routineNameForDay = "Rest Day"; if (!restDayIndices.includes(dayOfWeekIndex)) { if (dayOfWeekIndex === 1 && workoutRoutinesData[0]) routineNameForDay = workoutRoutinesData[0].day.split(':')[1].trim(); else if (dayOfWeekIndex === 2 && workoutRoutinesData[1]) routineNameForDay = workoutRoutinesData[1].day.split(':')[1].trim(); else if (dayOfWeekIndex === 4 && workoutRoutinesData[2]) routineNameForDay = workoutRoutinesData[2].day.split(':')[1].trim(); else if (dayOfWeekIndex === 5 && workoutRoutinesData[3]) routineNameForDay = workoutRoutinesData[3].day.split(':')[1].trim(); else if (dayOfWeekIndex === 6 && workoutRoutinesData[4]) routineNameForDay = workoutRoutinesData[4].day.split(':')[1].trim(); } let dayHtml = `<div class="w-full text-center"><p class="calendar-day-name">${days[dayOfWeekIndex]}</p><p class="calendar-day-date">${dayDate.getDate()}</p></div><p class="calendar-routine-name mt-2 flex-grow flex items-center justify-center text-center">${routineNameForDay}</p>`; if (!restDayIndices.includes(dayOfWeekIndex)) { dayHtml += `<div class="mt-auto flex items-center justify-center pt-1"><input type="checkbox" id="calDone-${dateString}" class="completion-checkbox h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500" onchange="handleMarkDayAsDone('${dateString}', this.checked)" ${completedDays[dateString] ? 'checked' : ''}><label for="calDone-${dateString}" class="ml-2 text-xs text-gray-600">Done</label></div>`; } else { dayHtml += `<div class="h-8"></div>`; } dayCell.innerHTML = dayHtml; calendarGridEl.appendChild(dayCell); } }
+                window.handleMarkDayAsDone = function(dateString, isChecked) { const completedDays = loadCompletedDays(); if (isChecked) { completedDays[dateString] = true; } else { delete completedDays[dateString]; } saveCompletedDays(completedDays); renderWeeklyCalendarView(); renderProgress(); }
+                function renderBodyWeightLog() { if (!bodyWeightLogList) return; bodyWeightLogList.innerHTML = ''; const bodyWeights = loadBodyWeights(); if (bodyWeights.length === 0) { bodyWeightLogList.innerHTML = '<p class="text-gray-500 italic">No body weight logged yet.</p>'; return; } bodyWeights.sort((a, b) => new Date(b.date) - new Date(a.date)); bodyWeights.forEach(entry => { const item = document.createElement('div'); item.className = 'bg-gray-50 p-3 rounded-md border border-gray-100 flex justify-between items-center'; item.innerHTML = `<div><span class="font-semibold text-gray-800">${entry.weight} ${entry.unit}</span><span class="text-xs text-gray-500 ml-2">(${new Date(entry.date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })})</span></div><button onclick="deleteBodyWeightEntry(${entry.id})" class="btn btn-danger-app btn-small text-xs p-1 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>`; bodyWeightLogList.appendChild(item); }); }
+                window.deleteBodyWeightEntry = function(entryId) { let bodyWeights = loadBodyWeights(); bodyWeights = bodyWeights.filter(entry => entry.id !== entryId); saveBodyWeights(bodyWeights); renderBodyWeightLog(); if (bodyWeightFeedback) showUserFeedback(bodyWeightFeedback, 'Body weight entry deleted.', 'success'); }
+                function renderProgress() { if (!personalBestsListEl || !muscleGroupPbsListEl || !currentStreakDisplay || !workoutsThisWeekDisplay || !longestStreakDisplay || !motivationalMessageEl) { return; } const workouts = loadWorkouts(); const completedDays = loadCompletedDays(); personalBestsListEl.innerHTML = ''; muscleGroupPbsListEl.innerHTML = ''; const completedDates = Object.keys(completedDays).filter(dateStr => completedDays[dateStr]).sort((a, b) => new Date(a) - new Date(b)); let currentS = 0; let longestS = 0; let workoutsThisW = 0; const restDayIndices = [0, 3]; if (completedDates.length > 0) { let today = new Date(); today.setHours(0, 0, 0, 0); let streakDate = new Date(today); for (let i = 0; i < 365; i++) { const dateString = streakDate.toISOString().split('T')[0]; const dayOfWeek = streakDate.getDay(); if (completedDays[dateString]) { currentS++; } else if (!restDayIndices.includes(dayOfWeek)) { break; } streakDate.setDate(streakDate.getDate() - 1); } let currentSequence = 0; const firstWorkoutDate = new Date(completedDates[0] + 'T00:00:00'); const lastCompletedDateConsideredForLongestStreak = new Date(completedDates[completedDates.length - 1] + 'T00:00:00'); let tempDate = new Date(firstWorkoutDate); while(tempDate <= lastCompletedDateConsideredForLongestStreak) { const dateStr = tempDate.toISOString().split('T')[0]; const dayOfWeek = tempDate.getDay(); if (completedDays[dateStr]) { currentSequence++; } else if (!restDayIndices.includes(dayOfWeek)) { longestS = Math.max(longestS, currentSequence); currentSequence = 0; } tempDate.setDate(tempDate.getDate() + 1); } longestS = Math.max(longestS, currentSequence); const todayForWeek = new Date(); const dayOfWeekForWeek = todayForWeek.getDay(); const startOfWeekOffset = dayOfWeekForWeek === 0 ? -6 : 1 - dayOfWeekForWeek; const startOfWeek = new Date(todayForWeek); startOfWeek.setDate(todayForWeek.getDate() + startOfWeekOffset); startOfWeek.setHours(0, 0, 0, 0); const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(startOfWeek.getDate() + 6); endOfWeek.setHours(23, 59, 59, 999); workoutsThisW = completedDates.filter(dateStr => { const d = new Date(dateStr + 'T00:00:00'); return d >= startOfWeek && d <= endOfWeek; }).length; } currentStreakDisplay.textContent = currentS; workoutsThisWeekDisplay.textContent = workoutsThisW; longestStreakDisplay.textContent = longestS; let message = "Start tracking to see your progress!"; if (longestS > 0 && longestS <= 7) message = "Keep going, consistency is key!"; else if (longestS > 7 && longestS <= 20) message = `Fantastic! A ${longestS}-day streak shows great habit formation!`; else if (longestS > 20 && longestS <= 50) message = `Incredible dedication! With a ${longestS}-day streak, you're a true FitTrack champion!`; else if (longestS > 50) message = `Wow, a ${longestS}-day streak! You're an inspiration!`; if (currentS > 7 && currentS >= longestS) { if (currentS <= 20) message = `Awesome! You're on a ${currentS}-day roll! Keep that fire burning!`; else if (currentS > 20) message = `Unstoppable! A ${currentS}-day streak is phenomenal! You're crushing it!`; } else if (currentS > 0 && currentS <=7 && longestS <=7) message = `You're on a ${currentS}-day streak! Every day counts!`; motivationalMessageEl.textContent = message; if (workouts.length === 0) { personalBestsListEl.innerHTML = '<p class="text-gray-500 italic">No workouts logged yet.</p>'; muscleGroupPbsListEl.innerHTML = '<p class="text-gray-500 italic">Log workouts to see muscle group focus.</p>'; return; } const personalBests = {}; const muscleGroupPBs = {}; workouts.forEach(workout => { const exerciseName = workout.exercise; const workoutType = workout.type || 'weight'; const value = parseFloat(workoutType === 'timed' ? workout.reps.split(' ')[0] : workout.weight); if (workoutType !== 'reps' && isNaN(value)) { return; } let isNewPb = false; if (!personalBests[exerciseName] || (workoutType === 'weight' && value > personalBests[exerciseName].value) || (workoutType === 'timed' && value > personalBests[exerciseName].value)) { isNewPb = true; } else if (workoutType === 'weight' && value === personalBests[exerciseName].value) { let currentPbRepsForComparison = parseInt(String(personalBests[exerciseName].reps).split('-')[0].trim()); let newEntryRepsForComparison = parseInt(String(workout.reps).split('-')[0].trim()); if (!isNaN(currentPbRepsForComparison) && !isNaN(newEntryRepsForComparison) && newEntryRepsForComparison > currentPbRepsForComparison) { isNewPb = true; } else if (!isNaN(currentPbRepsForComparison) && !isNaN(newEntryRepsForComparison) && newEntryRepsForComparison === currentPbRepsForComparison && new Date(workout.date) > new Date(personalBests[exerciseName].date)) { isNewPb = true; }} if (isNewPb) { personalBests[exerciseName] = { value: value, reps: workout.reps, date: workout.date, unit: workout.unit, type: workoutType, rpe: workout.rpe, notes: workout.notes, e1RM: 0, history: [workout] }; if (workoutType === 'weight') { let repsFor1RM = parseInt(String(workout.reps).split('-')[0].trim()); if (!isNaN(repsFor1RM) && repsFor1RM > 0) { personalBests[exerciseName].e1RM = value * (1 + repsFor1RM / 30); } } } else if (personalBests[exerciseName]) { if(!personalBests[exerciseName].history) personalBests[exerciseName].history = []; personalBests[exerciseName].history.push(workout); } const routineExercise = workoutRoutinesData.flatMap(day => day.exercises).find(ex => ex.name === exerciseName); if (routineExercise && routineExercise.muscleGroup) { const muscle = routineExercise.muscleGroup; if (!muscleGroupPBs[muscle]) { muscleGroupPBs[muscle] = []; } let existingMusclePbIndex = muscleGroupPBs[muscle].findIndex(pb => pb.exercise === exerciseName); if (personalBests[exerciseName] && personalBests[exerciseName].date === workout.date) { const pbDataForMuscle = { exercise: exerciseName, value: personalBests[exerciseName].value, reps: personalBests[exerciseName].reps, unit: personalBests[exerciseName].unit, type: personalBests[exerciseName].type, rpe: personalBests[exerciseName].rpe }; if (existingMusclePbIndex === -1) { muscleGroupPBs[muscle].push(pbDataForMuscle); } else { muscleGroupPBs[muscle][existingMusclePbIndex] = pbDataForMuscle; } } } }); if (Object.keys(personalBests).length === 0) { personalBestsListEl.innerHTML = '<p class="text-gray-500 italic">Log workouts for PBs!</p>'; } else { for (const exercise in personalBests) { const pb = personalBests[exercise]; const pbItemContainer = document.createElement('div'); pbItemContainer.className = 'bg-white p-4 rounded-lg shadow border border-gray-200'; const pbHeader = document.createElement('div'); pbHeader.className = 'flex justify-between items-center mb-2'; pbHeader.innerHTML = `<h4 class="text-md font-semibold text-gray-800">${exercise}</h4><button class="btn btn-small btn-primary-app text-xs toggle-history-btn">Show History</button>`; const pbDetails = document.createElement('p'); pbDetails.className = 'text-gray-600'; let pbText = ''; if (pb.type === 'timed') pbText = `PB: <span class="font-bold">${pb.reps}</span>`; else if (pb.type === 'reps') pbText = `PB: <span class="font-bold">${pb.reps} reps</span>`; else { pbText = `PB: <span class="font-bold">${pb.value} ${pb.unit}</span> for ${pb.reps} reps`; if (pb.e1RM > 0) pbText += `<br><span class="text-xs text-gray-500">Est. 1RM: ${pb.e1RM.toFixed(1)} ${pb.unit}</span>`; } if (pb.rpe) pbText += `<br><span class="text-xs text-gray-500">RPE: ${pb.rpe}</span>`; pbText += `<span class="text-xs text-gray-500 block mt-1">Achieved: ${new Date(pb.date + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>`; pbDetails.innerHTML = pbText; const historyContent = document.createElement('div'); historyContent.className = 'accordion-content'; if (pb.history && pb.history.length > 1) { const historyList = document.createElement('ul'); historyList.className = 'space-y-1 text-xs text-gray-600 p-3'; pb.history.sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 10).forEach(histEntry => { const histItem = document.createElement('li'); let histText = `${new Date(histEntry.date + 'T00:00:00').toLocaleDateString('en-GB', {day:'2-digit', month:'short'})}: `; if (histEntry.type === 'timed') histText += `${histEntry.reps} (S: ${histEntry.sets})`; else if (histEntry.type === 'reps') histText += `${histEntry.reps}r (S: ${histEntry.sets})`; else histText += `${histEntry.weight}${histEntry.unit} x ${histEntry.reps}r (S: ${histEntry.sets})`; if (histEntry.rpe) histText += ` (RPE: ${histEntry.rpe})`; if(histEntry.notes) histText += `<br><em class="text-gray-500">N: ${histEntry.notes}</em>`; histItem.innerHTML = histText; historyList.appendChild(histItem); }); historyContent.appendChild(historyList); } else { historyContent.innerHTML = '<p class="text-xs text-gray-500 italic p-3">No additional history.</p>'; } pbItemContainer.appendChild(pbHeader); pbItemContainer.appendChild(pbDetails); pbItemContainer.appendChild(historyContent); personalBestsListEl.appendChild(pbItemContainer); const toggleBtn = pbHeader.querySelector('.toggle-history-btn'); if (toggleBtn && historyContent) { setupAccordionToggle(toggleBtn, historyContent); }} } if (Object.keys(muscleGroupPBs).length === 0) { muscleGroupPbsListEl.innerHTML = '<p class="text-gray-500 italic">Log PBs for muscle focus.</p>'; } else { for (const muscle in muscleGroupPBs) { const muscleSection = document.createElement('div'); muscleSection.className = 'mb-4'; muscleSection.innerHTML = `<h5 class="text-md font-semibold text-gray-700 mb-1">${muscle}</h5>`; const list = document.createElement('ul'); list.className = 'list-disc list-inside pl-1 space-y-1 text-sm'; muscleGroupPBs[muscle].forEach(pb => { const item = document.createElement('li'); item.className = 'text-gray-600'; if (pb.type === 'timed') item.innerHTML = `${pb.exercise}: <span class="font-medium">${pb.reps}</span>`; else if (pb.type === 'reps') item.innerHTML = `${pb.exercise}: <span class="font-medium">${pb.reps} reps</span>`; else item.innerHTML = `${pb.exercise}: <span class="font-medium">${pb.value} ${pb.unit}</span> for ${pb.reps} reps`; if (pb.rpe) item.innerHTML += ` (RPE: ${pb.rpe})`; list.appendChild(item); }); muscleSection.appendChild(list); muscleGroupPbsListEl.appendChild(muscleSection); } } }
 
-                // --- Day Routine & Active Exercise ---
-                function startDayRoutine(dayIndex) { /* ... */ }
-                function updateWorkoutDurationDisplay() { /* ... */ }
-                function startNextExerciseInDay() { /* ... */ }
-                function handleFinishExercise() { /* ... */ }
-                function finishDayRoutine() { /* ... */ }
-                function resetActiveWorkoutSessionUI(showCancelMsg = true) { /* ... */ }
-                function showCancelDayConfirmation() { /* ... */ }
-                function hideCancelDayConfirmation() { /* ... */ }
-                function confirmCancelDayAction() { /* ... */ }
-                function cancelCurrentDayRoutine() { /* ... */ }
-                // Copy ALL the day routine functions from the previous full script here
+                // --- Day Routine & Active Exercise Logic ---
+                function startDayRoutine(dayIndex) { console.log(`DEBUG: startDayRoutine(${dayIndex}) CALLED.`); if (!workoutRoutinesData || !workoutRoutinesData[dayIndex]) { console.error(`DEBUG: startDayRoutine - Invalid dayIndex or data missing: ${dayIndex}`); showUserFeedback(activeWorkoutFeedback, 'Error: Could not find routine data.', 'error'); return; } if (activeWorkoutState || currentDayRoutine) { showUserFeedback(activeWorkoutFeedback, 'Session active. Finish or cancel first.', 'error'); if(activeWorkoutSection) activeWorkoutSection.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; } currentDayRoutine = workoutRoutinesData[dayIndex]; currentExerciseIndex = 0; console.log(`DEBUG: Starting routine: ${currentDayRoutine.day}`); showUserFeedback(activeWorkoutFeedback, `Starting ${currentDayRoutine.day}!`, 'success'); if(bottomNavBar) { Array.from(bottomNavBar.querySelectorAll('.nav-button')).forEach(btn => btn.disabled = true); } workoutSessionStartTime = Date.now(); totalSetsThisSession = 0; if(workoutDurationDisplay) workoutDurationDisplay.textContent = "Session Duration: 00:00"; clearInterval(workoutDurationInterval); workoutDurationInterval = setInterval(updateWorkoutDurationDisplay, 1000); startNextExerciseInDay(); }
+                function updateWorkoutDurationDisplay() { if (!workoutSessionStartTime || !workoutDurationDisplay) return; const elapsedMs = Date.now() - workoutSessionStartTime; const elapsedSecondsTotal = Math.floor(elapsedMs / 1000); const minutes = Math.floor(elapsedSecondsTotal / 60); const seconds = elapsedSecondsTotal % 60; workoutDurationDisplay.textContent = `Session Duration: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`; }
+                function startNextExerciseInDay() { console.log("DEBUG: startNextExerciseInDay() CALLED."); if (currentDayRoutine && currentExerciseIndex < currentDayRoutine.exercises.length) { const exercise = currentDayRoutine.exercises[currentExerciseIndex]; activeWorkoutState = { name: exercise.name, targetSets: parseInt(exercise.sets), currentSet: 1, lastWeightOrDuration: '', unit: activeUnitInput ? activeUnitInput.value : 'kg', originalRepsString: exercise.reps, type: exercise.type || 'weight', rpe: '', notes: '' }; if(activeExerciseNameDisplay) activeExerciseNameDisplay.textContent = activeWorkoutState.name; if(activeExerciseTargetsDisplay) activeExerciseTargetsDisplay.textContent = `Target: ${activeWorkoutState.targetSets} sets of ${activeWorkoutState.originalRepsString} reps`; if(currentExerciseInDayDisplay) currentExerciseInDayDisplay.textContent = `Exercise ${currentExerciseIndex + 1} of ${currentDayRoutine.exercises.length}`; if(activeSetDisplay) activeSetDisplay.textContent = `Set: ${activeWorkoutState.currentSet} / ${activeWorkoutState.targetSets}`; if(activeWorkoutState.type === 'timed') { if(activeWeightInputGroup) activeWeightInputGroup.classList.add('truly-hidden'); if(unitInputGroup) unitInputGroup.classList.add('truly-hidden'); if(rpeInputGroup) rpeInputGroup.classList.add('truly-hidden'); if(activeDurationInputGroup) activeDurationInputGroup.classList.remove('truly-hidden'); if(activeDurationInput) activeDurationInput.value = parseInt(activeWorkoutState.originalRepsString) || 30; if(activeDurationLabel) activeDurationLabel.textContent = "Duration (seconds)"; } else if (activeWorkoutState.type === 'reps') { if(activeWeightInputGroup) activeWeightInputGroup.classList.add('truly-hidden'); if(unitInputGroup) unitInputGroup.classList.add('truly-hidden'); if(activeDurationInputGroup) activeDurationInputGroup.classList.add('truly-hidden'); if(rpeInputGroup) rpeInputGroup.classList.remove('truly-hidden'); } else { if(activeWeightInputGroup) activeWeightInputGroup.classList.remove('truly-hidden'); if(unitInputGroup) unitInputGroup.classList.remove('truly-hidden'); if(rpeInputGroup) rpeInputGroup.classList.remove('truly-hidden'); if(activeDurationInputGroup) activeDurationInputGroup.classList.add('truly-hidden'); if(activeWeightInput) activeWeightInput.value = "0"; } if(activeNotesInput) activeNotesInput.value = ''; if(activeRpeSelect) activeRpeSelect.value = ''; if(activeUnitInput) activeUnitInput.value = activeWorkoutState.unit; setDefaultDate(activeWorkoutDateInput); if(activeWorkoutSection) activeWorkoutSection.classList.remove('truly-hidden'); if(activeWorkoutSection) activeWorkoutSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); showUserFeedback(activeWorkoutFeedback, `${activeWorkoutState.name} started! Adjust inputs.`, 'success'); if(logSetButton) { logSetButton.disabled = false; logSetButton.textContent = "Log Set & Rest"; } if(finishExerciseButton) { finishExerciseButton.disabled = false; finishExerciseButton.textContent = "Finish Exercise & Next"; } if(activeWorkoutState.type === 'timed' && activeDurationInput) activeDurationInput.focus(); else if (activeWorkoutState.type !== 'reps' && activeWeightInput) activeWeightInput.focus(); else if (activeRpeSelect) activeRpeSelect.focus(); } else { finishDayRoutine(); } }
+                function handleFinishExercise() { console.log("DEBUG: handleFinishExercise() CALLED."); if (!activeWorkoutState || !activeWorkoutDateInput) { console.error("DEBUG: handleFinishExercise - Missing state or date input."); return; } const workoutDate = activeWorkoutDateInput.value; if (!workoutDate) { showUserFeedback(activeWorkoutFeedback, 'Select date.', 'error'); activeWorkoutDateInput.focus(); return; } let valueToLog = activeWorkoutState.lastWeightOrDuration; let rpeValue = activeRpeSelect ? activeRpeSelect.value : ''; if (activeWorkoutState.type === 'timed') { if (valueToLog === '') valueToLog = activeDurationInput ? activeDurationInput.value : '0'; valueToLog = parseInt(valueToLog); if (isNaN(valueToLog) || valueToLog <=0) { showUserFeedback(activeWorkoutFeedback, 'Log duration.', 'error'); if(activeDurationInput) activeDurationInput.focus(); return; } rpeValue = ''; } else if (activeWorkoutState.type === 'weight') { if (valueToLog === '') valueToLog = activeWeightInput ? activeWeightInput.value : '0'; valueToLog = parseFloat(valueToLog); if (isNaN(valueToLog) || valueToLog < 0) { showUserFeedback(activeWorkoutFeedback, 'Log weight.', 'error'); if(activeWeightInput) activeWeightInput.focus(); return; } } else if (activeWorkoutState.type === 'reps') { valueToLog = ''; } if (activeWorkoutState.type !== 'timed' && rpeInputGroup && !rpeInputGroup.classList.contains('truly-hidden')) { if (!rpeValue) { showUserFeedback(activeWorkoutFeedback, 'Select RPE.', 'error'); if(activeRpeSelect) activeRpeSelect.focus(); return; } } const newWorkoutEntry = { id: Date.now(), exercise: activeWorkoutState.name, sets: activeWorkoutState.targetSets, reps: activeWorkoutState.type === 'timed' ? `${valueToLog} sec` : activeWorkoutState.originalRepsString, weight: (activeWorkoutState.type === 'weight') ? valueToLog : '', unit: (activeWorkoutState.type === 'weight') ? activeWorkoutState.unit : '', type: activeWorkoutState.type, rpe: rpeValue, notes: activeWorkoutState.notes, date: workoutDate }; const workouts = loadWorkouts(); workouts.push(newWorkoutEntry); saveWorkouts(workouts); renderLoggedWorkoutsAccordion(); renderProgress(); showUserFeedback(activeWorkoutFeedback, `${activeWorkoutState.name} logged!`, 'success'); currentExerciseIndex++; activeWorkoutState = null; startNextExerciseInDay(); }
+                function finishDayRoutine() { const dayName = currentDayRoutine ? currentDayRoutine.day : 'Workout Day'; const exercisesDone = currentDayRoutine ? currentDayRoutine.exercises.length : 0; const durationText = workoutDurationDisplay ? workoutDurationDisplay.textContent.replace('Session Duration: ', '') : 'N/A'; if (activeWorkoutDateInput && activeWorkoutDateInput.value) { const workoutDateStr = activeWorkoutDateInput.value; const completedDays = loadCompletedDays(); completedDays[workoutDateStr] = true; saveCompletedDays(completedDays); if (calendarSection && !calendarSection.classList.contains('section-hidden')) { renderWeeklyCalendarView(); } } if(summaryModalTitle) summaryModalTitle.textContent = `${dayName} Completed!`; if(summaryTotalExercises) summaryTotalExercises.textContent = exercisesDone; if(summaryTotalSets) summaryTotalSets.textContent = totalSetsThisSession; if(summarySessionDuration) summarySessionDuration.textContent = durationText; if(workoutSummaryModal) { workoutSummaryModal.classList.remove('truly-hidden'); workoutSummaryModal.classList.add('visible'); } currentDayRoutine = null; currentExerciseIndex = -1; resetActiveWorkoutSessionUI(false); if(bottomNavBar) { Array.from(bottomNavBar.querySelectorAll('.nav-button')).forEach(btn => btn.disabled = false); } clearInterval(workoutDurationInterval); if(workoutDurationDisplay) workoutDurationDisplay.textContent = "Session Duration: 00:00"; workoutSessionStartTime = null; totalSetsThisSession = 0; renderProgress(); }
+                function resetActiveWorkoutSessionUI(showCancelMsg = true) { activeWorkoutState = null; if(activeWorkoutSection) activeWorkoutSection.classList.add('truly-hidden'); if(activeWeightInput) activeWeightInput.value = "0"; if(activeDurationInput) activeDurationInput.value = "30"; if(activeRpeSelect) activeRpeSelect.value = ""; if(activeNotesInput) activeNotesInput.value = ''; if(logSetButton) { logSetButton.disabled = false; logSetButton.textContent = "Log Set & Rest"; } if(finishExerciseButton) { finishExerciseButton.disabled = false; finishExerciseButton.textContent = "Finish Exercise & Next"; } if(showCancelMsg) { showUserFeedback(activeWorkoutFeedback, 'Session cleared.', 'success');} }
+                function showCancelDayConfirmation() { if (cancelDayConfirmationModal) { cancelDayConfirmationModal.classList.remove('truly-hidden'); cancelDayConfirmationModal.classList.add('visible'); } }
+                function hideCancelDayConfirmation() { if (cancelDayConfirmationModal) { cancelDayConfirmationModal.classList.remove('visible'); setTimeout(() => cancelDayConfirmationModal.classList.add('truly-hidden'), 300); } }
+                function confirmCancelDayAction() { hideCancelDayConfirmation(); cancelCurrentDayRoutine(); }
+                function cancelCurrentDayRoutine() { if (currentDayRoutine) { showUserFeedback(activeWorkoutFeedback, `${currentDayRoutine.day} cancelled.`, 'success');} else if (activeWorkoutState) { showUserFeedback(activeWorkoutFeedback, `Exercise cancelled.`, 'success');} else { showUserFeedback(activeWorkoutFeedback, `No active routine.`, 'info', 0); return; } currentDayRoutine = null; currentExerciseIndex = -1; resetActiveWorkoutSessionUI(false); stopAndHideRestTimer(false); if(bottomNavBar) { Array.from(bottomNavBar.querySelectorAll('.nav-button')).forEach(btn => btn.disabled = false); } clearInterval(workoutDurationInterval); if(workoutDurationDisplay) workoutDurationDisplay.textContent = "Session Duration: 00:00"; workoutSessionStartTime = null; }
 
                 // --- Notification Permission Logic ---
-                function updateNotificationStatusDisplay() { /* ... */ }
-                function requestNotificationPermission() { /* ... */ }
-                // Copy ALL the notification permission functions from the previous full script here
+                function updateNotificationStatusDisplay() { if (!('Notification' in window)) { if(notificationPermissionStatus) notificationPermissionStatus.textContent = "Notifications not supported."; if(requestNotificationPermissionBtn) requestNotificationPermissionBtn.disabled = true; return; } const currentPermission = Notification.permission; if(notificationPermissionStatus) notificationPermissionStatus.textContent = `Current status: ${currentPermission}`; if(requestNotificationPermissionBtn) requestNotificationPermissionBtn.disabled = (currentPermission !== 'default'); }
+                function requestNotificationPermission() { if (!('Notification' in window)) { showUserFeedback(settingsFeedback || appHeader, "Notifications not supported.", "error"); return; } if (Notification.permission === 'granted') { showUserFeedback(settingsFeedback || appHeader, "Notifications already granted.", "success"); updateNotificationStatusDisplay(); return; } if (Notification.permission === 'denied') { showUserFeedback(settingsFeedback || appHeader, "Notifications denied. Check browser/OS settings.", "warning"); updateNotificationStatusDisplay(); return; } if (Notification.permission === 'default') { console.log('Main Script: Requesting notification permission...'); Notification.requestPermission().then(permission => { console.log('Main Script: Notification permission result:', permission); if (permission === "granted") { showUserFeedback(settingsFeedback || appHeader, "Notifications enabled!", "success", 2000); } else { showUserFeedback(settingsFeedback || appHeader, "Notifications denied.", "warning", 4000); } updateNotificationStatusDisplay(); }).catch(err => { console.error("Error requesting notification permission:", err); showUserFeedback(settingsFeedback || appHeader, "Error requesting permissions.", "error"); }); } }
 
                 // --- Timer Logic Definitions ---
-                function updateTimerDisplays() { /* ... */ }
-                function startRestTimerVisuals() { /* ... */ }
-                function handleZeroRestScenario() { /* ... */ }
-                function pauseRestTimer() { /* ... */ }
-                function resumeRestTimer() { /* ... */ }
-                function add15SecondsToRest() { /* ... */ }
-                function stopAndHideRestTimer(stoppedByUser = true) { /* ... */ }
-                function endRestTimerExperience() { /* ... */ }
-                function handleMinimizeTimer() { /* ... */ }
-                function handleMaximizeTimer() { /* ... */ }
-                function updateFullscreenPauseResumeButton(isPaused) { /* ... */ }
-                function updateMinimizedPauseResumeButton(isPaused) { /* ... */ }
-                // Copy ALL the timer logic functions from the previous full script here
+                function updateTimerDisplays() { if(!timerDisplayFullscreen || !minimizedTimerBarText) return; const minutes = Math.floor(remainingSecondsForCountdown / 60); const seconds = remainingSecondsForCountdown % 60; const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`; timerDisplayFullscreen.textContent = timeString; minimizedTimerBarText.textContent = `Rest: ${timeString}`; }
+                function startRestTimerVisuals() { console.log("Main Script: startRestTimerVisuals called."); if (remainingSecondsForCountdown <= 0) { console.log("Main Script: startRestTimerVisuals - remainingSeconds is 0, returning."); return; } restTimerState = 'running'; isTimerMinimized = false; if(mainAppContentWrapper) mainAppContentWrapper.classList.add('hidden-for-timer'); if(fullscreenTimerOverlay) { fullscreenTimerOverlay.classList.remove('truly-hidden'); requestAnimationFrame(() => { fullscreenTimerOverlay.classList.add('visible'); }); } if(minimizedTimerBar) minimizedTimerBar.classList.add('truly-hidden'); updateFullscreenPauseResumeButton(false); updateMinimizedPauseResumeButton(false); updateTimerDisplays(); clearInterval(timerInterval); timerInterval = setInterval(() => { if (restTimerState === 'running') { if (remainingSecondsForCountdown > 0) { remainingSecondsForCountdown--; updateTimerDisplays(); } else { console.log("Main Script: Timer interval reached 0, calling endRestTimerExperience."); restTimerState = 'finished'; clearInterval(timerInterval); endRestTimerExperience(); } } else { clearInterval(timerInterval); console.log("Main Script: Timer interval cleared because state is not 'running'. State:", restTimerState); } }, 1000); }
+                function handleZeroRestScenario() { console.log("Main Script: handleZeroRestScenario called."); if (logSetButton && activeWorkoutState && activeWorkoutState.currentSet <= activeWorkoutState.targetSets) logSetButton.disabled = false; if (finishExerciseButton) finishExerciseButton.disabled = false; if (mainAppContentWrapper) mainAppContentWrapper.classList.remove('hidden-for-timer'); if (fullscreenTimerOverlay) { fullscreenTimerOverlay.classList.remove('visible'); fullscreenTimerOverlay.classList.add('truly-hidden'); } if (minimizedTimerBar) minimizedTimerBar.classList.add('truly-hidden'); isTimerMinimized = false; restTimerState = 'idle'; if (activeWorkoutSection && !activeWorkoutSection.classList.contains('truly-hidden')) { if (activeWorkoutState && activeWorkoutState.type === 'timed' && activeDurationInput) activeDurationInput.focus(); else if (activeWorkoutState && activeWorkoutState.type === 'weight' && activeWeightInput) activeWeightInput.focus(); else if (activeWorkoutState && activeWorkoutState.type === 'reps' && activeRpeSelect) activeRpeSelect.focus(); } }
+                function pauseRestTimer() { console.log("Main Script: pauseRestTimer called."); if (restTimerState === 'running') { restTimerState = 'paused'; clearInterval(timerInterval); updateFullscreenPauseResumeButton(true); updateMinimizedPauseResumeButton(true); showUserFeedback(activeWorkoutFeedback, "Rest timer paused.", "info", 2000); } }
+                function resumeRestTimer() { console.log("Main Script: resumeRestTimer called."); if (restTimerState === 'paused') { if (remainingSecondsForCountdown <= 0) { console.log("Main Script: resumeRestTimer - remaining seconds is 0, finishing timer."); restTimerState = 'finished'; endRestTimerExperience(); return; } restTimerState = 'running'; updateFullscreenPauseResumeButton(false); updateMinimizedPauseResumeButton(false); timerInterval = setInterval(() => { if (restTimerState === 'running') { if (remainingSecondsForCountdown > 0) { remainingSecondsForCountdown--; updateTimerDisplays(); } else { console.log("Main Script: Timer interval (resume) reached 0, calling endRestTimerExperience."); restTimerState = 'finished'; clearInterval(timerInterval); endRestTimerExperience(); } } else { clearInterval(timerInterval); console.log("Main Script: Timer interval (resume) cleared because state is not 'running'. State:", restTimerState); } }, 1000); } }
+                function add15SecondsToRest() { console.log("Main Script: add15SecondsToRest called."); if (restTimerState === 'running' || restTimerState === 'paused') { remainingSecondsForCountdown += 15; updateTimerDisplays(); showUserFeedback(activeWorkoutFeedback, "+15s added to rest.", "success", 1500); const wasRunningOrPaused = (restTimerState === 'running' || restTimerState === 'paused'); if (wasRunningOrPaused && 'serviceWorker' in navigator && navigator.serviceWorker.controller) { const now = Date.now(); const newEndTime = now + (remainingSecondsForCountdown * 1000); console.log('Main Script: Rescheduling SW notification due to +15s. New end time:', new Date(newEndTime).toLocaleTimeString()); navigator.serviceWorker.controller.postMessage({ type: 'SCHEDULE_REST_END', endTime: newEndTime }); } } }
+                function stopAndHideRestTimer(stoppedByUser = true) { console.log("Main Script: stopAndHideRestTimer called. Stopped by user:", stoppedByUser); const wasRunningOrPaused = (restTimerState === 'running' || restTimerState === 'paused'); clearInterval(timerInterval); restTimerState = 'finished'; remainingSecondsForCountdown = 0; updateTimerDisplays(); if(mainAppContentWrapper) mainAppContentWrapper.classList.remove('hidden-for-timer'); if(fullscreenTimerOverlay) { fullscreenTimerOverlay.classList.remove('visible'); fullscreenTimerOverlay.classList.add('truly-hidden'); } if(minimizedTimerBar) { minimizedTimerBar.classList.add('truly-hidden'); minimizedTimerBar.classList.remove('times-up-flash'); } isTimerMinimized = false; if(activeWorkoutState && logSetButton && activeWorkoutState.currentSet <= activeWorkoutState.targetSets) logSetButton.disabled = false; if(activeWorkoutState && finishExerciseButton) finishExerciseButton.disabled = false; if (stoppedByUser) showUserFeedback(activeWorkoutFeedback, "Rest stopped. Continue workout.", "info", 2000); if (wasRunningOrPaused && 'serviceWorker' in navigator && navigator.serviceWorker.controller) { console.log('Main Script: Sending CANCEL_REST_TIMER message to SW.'); navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_REST_TIMER' }); } if(activeWorkoutSection && !activeWorkoutSection.classList.contains('truly-hidden')) { activeWorkoutSection.scrollIntoView({ behavior: 'smooth', block: 'center' }); if(activeWorkoutState && activeWorkoutState.type === 'timed' && activeDurationInput) activeDurationInput.focus(); else if(activeWorkoutState && activeWorkoutState.type === 'weight' && activeWeightInput) activeWeightInput.focus(); else if (activeWorkoutState && activeWorkoutState.type === 'reps' && activeRpeSelect) activeRpeSelect.focus(); } restTimerState = 'idle'; }
+                function endRestTimerExperience() { console.log("Main Script: endRestTimerExperience called. Current state:", restTimerState); if (restTimerState === 'finished') { if(timerDisplayFullscreen) timerDisplayFullscreen.textContent = "Time's Up!"; if(minimizedTimerBar) { minimizedTimerBarText.textContent = "Time's Up!"; minimizedTimerBar.classList.add('times-up-flash'); if (!isTimerMinimized) { minimizedTimerBar.classList.remove('truly-hidden'); } } if(activeWorkoutFeedback) showUserFeedback(activeWorkoutFeedback, "Rest finished! Back to workout.", "success", 2000); try { if (document.hasFocus() && navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) { console.warn("Vibration failed:", e); } setTimeout(() => { if (restTimerState === 'finished') { console.log("Main Script: endRestTimerExperience timeout executed."); if(mainAppContentWrapper) mainAppContentWrapper.classList.remove('hidden-for-timer'); if(fullscreenTimerOverlay) { fullscreenTimerOverlay.classList.remove('visible'); fullscreenTimerOverlay.classList.add('truly-hidden'); } if(minimizedTimerBar) { minimizedTimerBar.classList.add('truly-hidden'); minimizedTimerBar.classList.remove('times-up-flash'); } if(timerDisplayFullscreen && timerDisplayFullscreen.textContent === "Time's Up!") timerDisplayFullscreen.textContent = "00:00"; if(activeWorkoutState && logSetButton && activeWorkoutState.currentSet <= activeWorkoutState.targetSets) logSetButton.disabled = false; if(activeWorkoutState && finishExerciseButton) finishExerciseButton.disabled = false; if(activeWorkoutSection && !activeWorkoutSection.classList.contains('truly-hidden')) { activeWorkoutSection.scrollIntoView({ behavior: 'smooth', block: 'center' }); if(activeWorkoutState && activeWorkoutState.type === 'timed' && activeDurationInput) activeDurationInput.focus(); else if(activeWorkoutState && activeWorkoutState.type === 'weight' && activeWeightInput) activeWeightInput.focus(); else if (activeWorkoutState && activeWorkoutState.type === 'reps' && activeRpeSelect) activeRpeSelect.focus(); } restTimerState = 'idle'; } else { console.log("Main Script: endRestTimerExperience timeout skipped, state is now:", restTimerState); } }, 2500); } else { console.log("Main Script: endRestTimerExperience call skipped, state was not 'finished'."); } }
+                function handleMinimizeTimer() { if (fullscreenTimerOverlay && mainAppContentWrapper && minimizedTimerBar && appHeader) { fullscreenTimerOverlay.classList.remove('visible'); fullscreenTimerOverlay.classList.add('truly-hidden'); mainAppContentWrapper.classList.remove('hidden-for-timer'); minimizedTimerBar.classList.remove('truly-hidden'); isTimerMinimized = true; } }
+                function handleMaximizeTimer() { if (fullscreenTimerOverlay && mainAppContentWrapper && minimizedTimerBar) { minimizedTimerBar.classList.add('truly-hidden'); mainAppContentWrapper.classList.add('hidden-for-timer'); fullscreenTimerOverlay.classList.remove('truly-hidden'); fullscreenTimerOverlay.classList.add('visible'); isTimerMinimized = false; } }
+                function updateFullscreenPauseResumeButton(isPaused) { if (fullscreenPlayIcon && fullscreenPauseIcon && fullscreenPauseResumeBtn) { fullscreenPlayIcon.classList.toggle('truly-hidden', !isPaused); fullscreenPauseIcon.classList.toggle('truly-hidden', isPaused); fullscreenPauseResumeBtn.classList.remove('btn-primary-app', 'btn-warning-app'); if (isPaused) fullscreenPauseResumeBtn.classList.add('btn-primary-app'); else fullscreenPauseResumeBtn.classList.add('btn-warning-app'); } }
+                function updateMinimizedPauseResumeButton(isPaused) { if (minimizedPlayIconPath && minimizedPauseIconPath && minimizedPauseResumeBtn) { minimizedPlayIconPath.classList.toggle('truly-hidden', !isPaused); minimizedPauseIconPath.classList.toggle('truly-hidden', isPaused); minimizedPauseResumeBtn.classList.remove('btn-primary-app', 'btn-warning-app'); if (isPaused) minimizedPauseResumeBtn.classList.add('btn-primary-app'); else minimizedPauseResumeBtn.classList.add('btn-warning-app'); } }
 
                 // --- Core Action: Log Set ---
-                function handleLogSet() { /* ... */ }
-                // Copy the handleLogSet function from the previous full script here
+                function handleLogSet() {
+                    console.log("Main Script: handleLogSet called.");
+                    if (!activeWorkoutState) { console.error("handleLogSet - activeWorkoutState is null. Aborting."); return; }
+                    let feedbackMessage = `Set ${activeWorkoutState.currentSet} noted. `;
+
+                    if (activeWorkoutState.type === 'timed') {
+                        if (!activeDurationInput) { console.error("handleLogSet - activeDurationInput is null!"); return; }
+                        const duration = parseInt(activeDurationInput.value);
+                        if (isNaN(duration) || duration <=0) { showUserFeedback(activeWorkoutFeedback, 'Enter valid duration.', 'error'); if(activeDurationInput) activeDurationInput.focus(); return; }
+                        activeWorkoutState.lastWeightOrDuration = duration;
+                        feedbackMessage = `Set ${activeWorkoutState.currentSet} (${duration} sec) noted. `;
+                    } else if (activeWorkoutState.type === 'weight') {
+                        if (!activeWeightInput) { console.error("handleLogSet - activeWeightInput is null!"); return; }
+                        const weight = parseFloat(activeWeightInput.value);
+                        if (isNaN(weight) || weight < 0) { showUserFeedback(activeWorkoutFeedback, 'Enter valid weight.', 'error'); if(activeWeightInput) activeWeightInput.focus(); return; }
+                        activeWorkoutState.lastWeightOrDuration = weight;
+                        if(activeUnitInput) activeWorkoutState.unit = activeUnitInput.value;
+                        feedbackMessage = `Set ${activeWorkoutState.currentSet} (${weight}${activeWorkoutState.unit}) noted. `;
+                    }
+                    activeWorkoutState.notes = activeNotesInput ? activeNotesInput.value : '';
+                    totalSetsThisSession++;
+                    console.log("Main Script: Total sets this session:", totalSetsThisSession);
+
+                    if (activeWorkoutState.currentSet < activeWorkoutState.targetSets) {
+                        activeWorkoutState.currentSet++;
+                        if(activeSetDisplay) activeSetDisplay.textContent = `Set: ${activeWorkoutState.currentSet} / ${activeWorkoutState.targetSets}`;
+                    } else {
+                        if(activeSetDisplay) activeSetDisplay.textContent = `All sets noted! Finish exercise.`;
+                        if(logSetButton) logSetButton.disabled = true;
+                        if(finishExerciseButton) finishExerciseButton.focus();
+                    }
+                    if(logSetButton) logSetButton.disabled = true;
+                    if(finishExerciseButton) finishExerciseButton.disabled = true;
+
+                    const currentTotalRestSeconds = (defaultRestMinutes * 60) + defaultRestSeconds;
+                    console.log("Main Script: Calculated total rest seconds:", currentTotalRestSeconds);
+
+                    if (currentTotalRestSeconds <= 0) {
+                        showUserFeedback(activeWorkoutFeedback, feedbackMessage + "Rest time is 0. Skipping rest.", "info");
+                        handleZeroRestScenario();
+                        return;
+                    }
+                    const now = Date.now();
+                    const totalRestMillis = currentTotalRestSeconds * 1000;
+                    const endTime = now + totalRestMillis;
+
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                         console.log('Main Script: SW controller found. Sending SCHEDULE_REST_END message to SW.', { type: 'SCHEDULE_REST_END', endTime: endTime });
+                         try {
+                              navigator.serviceWorker.controller.postMessage({ type: 'SCHEDULE_REST_END', endTime: endTime });
+                              showUserFeedback(activeWorkoutFeedback, feedbackMessage + "Starting rest...", "success");
+                         } catch (postMessageError) {
+                             console.error("Main Script: Error sending message to SW:", postMessageError);
+                             showUserFeedback(activeWorkoutFeedback, feedbackMessage + "Error starting timer.", "error");
+                         }
+                    } else {
+                         console.warn("Main Script: SW controller not available. Cannot schedule background timer.");
+                         showUserFeedback(activeWorkoutFeedback, feedbackMessage + "Starting rest (background timer may fail)...", "warning");
+                    }
+                    remainingSecondsForCountdown = currentTotalRestSeconds;
+                    startRestTimerVisuals();
+                    console.log("Main Script: handleLogSet finished.");
+                }
 
                 // --- Settings Modal Logic ---
-                function openSettingsModal() { /* ... */ }
-                function closeSettingsModal() { if(settingsModal) { settingsModal.classList.remove('visible'); setTimeout(() => { settingsModal.classList.add('truly-hidden'); if(resetConfirmationArea) resetConfirmationArea.classList.add('truly-hidden'); }, 300); } } // Make sure this is complete
-                function saveTimerSettings() { /* ... */ }
-                function loadTimerSettings() { /* ... */ }
-                function handleShowResetConfirmation() { /* ... */ }
-                function handleCancelReset() { /* ... */ }
-                function handleConfirmReset() { /* ... */ }
-                function exportAllData() { /* ... */ }
-                function handleImportData() { /* ... */ }
-                // Copy ALL the settings modal functions from the previous full script here
+                function openSettingsModal() { if(settingsModal && settingsTimerMinutesInput && settingsTimerSecondsInput) { settingsTimerMinutesInput.value = defaultRestMinutes; settingsTimerSecondsInput.value = defaultRestSeconds; updateNotificationStatusDisplay(); settingsModal.classList.remove('truly-hidden'); settingsModal.classList.add('visible'); } else { console.error("openSettingsModal - Critical elements not found!"); } }
+                function closeSettingsModal() { if(settingsModal) { settingsModal.classList.remove('visible'); setTimeout(() => { settingsModal.classList.add('truly-hidden'); if(resetConfirmationArea) resetConfirmationArea.classList.add('truly-hidden'); }, 300); } }
+                function saveTimerSettings() { if(!settingsTimerMinutesInput || !settingsTimerSecondsInput) return; const mins = parseInt(settingsTimerMinutesInput.value); const secs = parseInt(settingsTimerSecondsInput.value); if (isNaN(mins) || mins < 0 || mins > 59 || isNaN(secs) || secs < 0 || secs > 59) { showUserFeedback(settingsFeedback, "Invalid time.", "error"); return; } defaultRestMinutes = mins; defaultRestSeconds = secs; localStorage.setItem('fitTrackRestMinutes', defaultRestMinutes.toString()); localStorage.setItem('fitTrackRestSeconds', defaultRestSeconds.toString()); showUserFeedback(settingsFeedback, "Settings saved!", "success"); setTimeout(closeSettingsModal, 1500); }
+                function loadTimerSettings() { const savedMins = localStorage.getItem('fitTrackRestMinutes'); const savedSecs = localStorage.getItem('fitTrackRestSeconds'); defaultRestMinutes = (savedMins !== null && !isNaN(parseInt(savedMins))) ? parseInt(savedMins) : 1; defaultRestSeconds = (savedSecs !== null && !isNaN(parseInt(savedSecs))) ? parseInt(savedSecs) : 30; }
+                function handleShowResetConfirmation() { if(resetConfirmationArea) resetConfirmationArea.classList.remove('truly-hidden'); }
+                function handleCancelReset() { if(resetConfirmationArea) resetConfirmationArea.classList.add('truly-hidden'); }
+                function handleConfirmReset() { localStorage.removeItem('fitTrackWorkouts'); localStorage.removeItem('fitTrackRestMinutes'); localStorage.removeItem('fitTrackRestSeconds'); localStorage.removeItem('fitTrackCompletedDays'); localStorage.removeItem('fitTrackBodyWeights'); sessionStorage.removeItem('isFitTrackLoggedIn'); defaultRestMinutes = 1; defaultRestSeconds = 30; if(settingsTimerMinutesInput) settingsTimerMinutesInput.value = defaultRestMinutes; if(settingsTimerSecondsInput) settingsTimerSecondsInput.value = defaultRestSeconds; renderLoggedWorkoutsAccordion(); renderProgress(); renderWorkoutRoutines(); renderBodyWeightLog(); renderWeeklyCalendarView(); showUserFeedback(settingsFeedback, "App data reset. Reloading...", "success"); setTimeout(() => window.location.reload(), 1500); }
+                function exportAllData() { const dataToExport = { workouts: loadWorkouts(), bodyWeights: loadBodyWeights(), timerSettings: { minutes: defaultRestMinutes, seconds: defaultRestSeconds }, completedDays: loadCompletedDays() }; const jsonString = JSON.stringify(dataToExport, null, 2); const blob = new Blob([jsonString], {type: "application/json"}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'fittrack_backup.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); showUserFeedback(settingsFeedback, "Data exported!", "success"); }
+                function handleImportData() { if (!importFileEl || !importFileEl.files || importFileEl.files.length === 0) { showUserFeedback(settingsFeedback, "Select JSON file.", "error"); return; } const file = importFileEl.files[0]; if (file.type !== "application/json") { showUserFeedback(settingsFeedback, "Invalid file type.", "error"); return; } const reader = new FileReader(); reader.onload = function(event) { try { const importedData = JSON.parse(event.target.result); if (!importedData || typeof importedData !== 'object' || !('workouts' in importedData) || !('bodyWeights' in importedData) || !('timerSettings' in importedData) || !('completedDays' in importedData)) throw new Error("Invalid data structure."); saveWorkouts(importedData.workouts || []); saveBodyWeights(importedData.bodyWeights || []); saveCompletedDays(importedData.completedDays || {}); if (importedData.timerSettings) { defaultRestMinutes = parseInt(importedData.timerSettings.minutes) || 1; defaultRestSeconds = parseInt(importedData.timerSettings.seconds) || 30; localStorage.setItem('fitTrackRestMinutes', defaultRestMinutes.toString()); localStorage.setItem('fitTrackRestSeconds', defaultRestSeconds.toString()); if(settingsTimerMinutesInput) settingsTimerMinutesInput.value = defaultRestMinutes; if(settingsTimerSecondsInput) settingsTimerSecondsInput.value = defaultRestSeconds; } showUserFeedback(settingsFeedback, "Import successful! Reloading...", "success", 2500); setTimeout(() => { window.location.reload(); }, 2600); } catch (e) { console.error("Error importing data:", e); showUserFeedback(settingsFeedback, `Import Error: ${e.message}`, "error", 5000); } finally { importFileEl.value = ''; } }; reader.onerror = function() { showUserFeedback(settingsFeedback, "Error reading file.", "error"); importFileEl.value = ''; }; reader.readAsText(file); }
 
                 // --- Body Weight Logging ---
-                function logBodyWeight(event) { /* ... */ }
-                // Copy the logBodyWeight function from the previous full script here
+                function logBodyWeight(event) { event.preventDefault(); if (!bodyWeightInputEl || !bodyWeightUnitEl || !bodyWeightDateEl || !bodyWeightFeedback) return; const weight = parseFloat(bodyWeightInputEl.value); const unit = bodyWeightUnitEl.value; const date = bodyWeightDateEl.value; if (isNaN(weight) || weight <= 0) { showUserFeedback(bodyWeightFeedback, "Enter valid weight.", "error"); return; } if (!date) { showUserFeedback(bodyWeightFeedback, "Select date.", "error"); return; } const newEntry = { id: Date.now(), weight: weight, unit: unit, date: date }; const bodyWeights = loadBodyWeights(); bodyWeights.push(newEntry); saveBodyWeights(bodyWeights); renderBodyWeightLog(); showUserFeedback(bodyWeightFeedback, "Body weight logged!", "success"); bodyWeightForm.reset(); setDefaultDate(bodyWeightDateEl); }
 
                 // --- View Toggle Logic (Updated for Bottom Nav) ---
                 function toggleView(showSection) {
                     console.log(`toggleView: Called with section = ${showSection}`);
-                    // Ensure all section elements are defined
-                    if (!workoutRoutinesSection || !calendarSection || !workoutListSection || !progressSection || !bodyWeightSection) {
-                        console.error("toggleView: One or more section elements not found!");
-                        return;
-                    }
-                    // Hide all sections first
-                    workoutRoutinesSection.classList.add('section-hidden');
-                    calendarSection.classList.add('section-hidden');
-                    workoutListSection.classList.add('section-hidden');
-                    progressSection.classList.add('section-hidden');
-                    bodyWeightSection.classList.add('section-hidden');
-
-                    // Deactivate all nav buttons
+                    if (!workoutRoutinesSection || !calendarSection || !workoutListSection || !progressSection || !bodyWeightSection) { console.error("toggleView: One or more section elements not found!"); return; }
+                    workoutRoutinesSection.classList.add('section-hidden'); calendarSection.classList.add('section-hidden'); workoutListSection.classList.add('section-hidden'); progressSection.classList.add('section-hidden'); bodyWeightSection.classList.add('section-hidden');
                     const navButtons = bottomNavBar ? bottomNavBar.querySelectorAll('.nav-button') : [];
                     navButtons.forEach(btn => btn.classList.remove('active'));
 
-                    // Show the selected section and activate its button
                     try {
-                        if (showSection === 'routines') {
-                            workoutRoutinesSection.classList.remove('section-hidden');
-                            if(showRoutinesBtnNav) showRoutinesBtnNav.classList.add('active');
-                        } else if (showSection === 'calendar') {
-                            calendarSection.classList.remove('section-hidden');
-                            if(showCalendarBtnNav) showCalendarBtnNav.classList.add('active');
-                            renderWeeklyCalendarView();
-                        } else if (showSection === 'log') {
-                            workoutListSection.classList.remove('section-hidden');
-                            if(showLogBtnNav) showLogBtnNav.classList.add('active');
-                            renderLoggedWorkoutsAccordion();
-                        } else if (showSection === 'bodyweight') {
-                            bodyWeightSection.classList.remove('section-hidden');
-                            if(showBodyWeightBtnNav) showBodyWeightBtnNav.classList.add('active');
-                            renderBodyWeightLog();
-                        } else if (showSection === 'progress') {
-                            progressSection.classList.remove('section-hidden');
-                            if(progressBtnNav) progressBtnNav.classList.add('active');
-                            renderProgress();
-                        } else {
-                            console.warn(`toggleView: Unknown section requested: ${showSection}`);
-                            // Default to routines if unknown
-                            workoutRoutinesSection.classList.remove('section-hidden');
-                            if(showRoutinesBtnNav) showRoutinesBtnNav.classList.add('active');
-                        }
-                    } catch (toggleShowError) {
-                        console.error(`toggleView: Error showing section ${showSection}:`, toggleShowError);
-                    }
+                        if (showSection === 'routines') { workoutRoutinesSection.classList.remove('section-hidden'); if(showRoutinesBtnNav) showRoutinesBtnNav.classList.add('active'); }
+                        else if (showSection === 'calendar') { calendarSection.classList.remove('section-hidden'); if(showCalendarBtnNav) showCalendarBtnNav.classList.add('active'); renderWeeklyCalendarView(); }
+                        else if (showSection === 'log') { workoutListSection.classList.remove('section-hidden'); if(showLogBtnNav) showLogBtnNav.classList.add('active'); renderLoggedWorkoutsAccordion(); }
+                        else if (showSection === 'bodyweight') { bodyWeightSection.classList.remove('section-hidden'); if(showBodyWeightBtnNav) showBodyWeightBtnNav.classList.add('active'); renderBodyWeightLog(); }
+                        else if (showSection === 'progress') { progressSection.classList.remove('section-hidden'); if(progressBtnNav) progressBtnNav.classList.add('active'); renderProgress(); }
+                        else { workoutRoutinesSection.classList.remove('section-hidden'); if(showRoutinesBtnNav) showRoutinesBtnNav.classList.add('active'); } // Default
+                    } catch (toggleShowError) { console.error(`toggleView: Error showing section ${showSection}:`, toggleShowError); }
                 }
-                function displayCurrentDayInfo() { /* ... */ }
-                // Copy displayCurrentDayInfo from the previous full script here
-
+                function displayCurrentDayInfo() { if (!currentDayInfo) return; const today = new Date(); const dayOfWeek = today.getDay(); const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; let activity = "Rest Day"; if (dayOfWeek === 1 && workoutRoutinesData[0]) activity = workoutRoutinesData[0].day; else if (dayOfWeek === 2 && workoutRoutinesData[1]) activity = workoutRoutinesData[1].day; else if (dayOfWeek === 4 && workoutRoutinesData[2]) activity = workoutRoutinesData[2].day; else if (dayOfWeek === 5 && workoutRoutinesData[3]) activity = workoutRoutinesData[3].day; else if (dayOfWeek === 6 && workoutRoutinesData[4]) activity = workoutRoutinesData[4].day; currentDayInfo.textContent = `Today: ${days[dayOfWeek]} - ${activity.includes(':') ? activity.split(':')[1].trim() : activity}`; }
 
                 // --- Login Logic ---
-                function attemptLogin() { /* ... */ }
-                // Copy attemptLogin from the previous full script here
+                function attemptLogin() { console.log("attemptLogin called."); if (!passwordInput || !loginScreen || !appContainer || !loginFeedback) { console.error("Login elements missing!"); return; } const enteredPassword = passwordInput.value; if (enteredPassword === '1234') { console.log("Password CORRECT."); loginScreen.classList.add('truly-hidden'); appContainer.classList.remove('truly-hidden'); sessionStorage.setItem('isFitTrackLoggedIn', 'true'); loginFeedback.textContent = ''; initializeApp(); } else { console.log("Password INCORRECT."); showUserFeedback(loginFeedback, 'Incorrect password.', 'error', 0); passwordInput.value = ''; passwordInput.focus(); } }
 
                 // --- Initialize App ---
-                function initializeApp() { /* ... */ }
-                // Copy initializeApp from the previous full script here (ensure it calls toggleView('routines'))
+                function initializeApp() { console.log("initializeApp: Function Started."); try { loadTimerSettings(); renderLoggedWorkoutsAccordion(); renderProgress(); setDefaultDate(activeWorkoutDateInput); setDefaultDate(bodyWeightDateEl); renderBodyWeightLog(); renderWorkoutRoutines(); displayCurrentDayInfo(); toggleView('routines'); updateNotificationStatusDisplay(); if (activeUnitInput && activeUnitDisplayValue) { activeUnitInput.addEventListener('change', function() { if(activeUnitDisplayValue) activeUnitDisplayValue.textContent = this.value; if (activeWorkoutState) { activeWorkoutState.unit = this.value; } }); if(activeUnitDisplayValue) activeUnitDisplayValue.textContent = activeUnitInput.value; } if (togglePBsBtn && personalBestsListEl) setupAccordionToggle(togglePBsBtn, personalBestsListEl); if (toggleMuscleFocusBtn && muscleGroupPbsListEl) setupAccordionToggle(toggleMuscleFocusBtn, muscleGroupPbsListEl); if(document.getElementById('currentYear')) document.getElementById('currentYear').textContent = new Date().getFullYear(); } catch (initError) { console.error("initializeApp: ERROR during initialization steps:", initError); } console.log("initializeApp: Function Finished."); }
 
-
-                // ========================================================
-                // --- Event Listeners (Update for new nav button IDs) ---
-                // ========================================================
+                // --- Event Listeners ---
                 if (loginButton) loginButton.addEventListener('click', attemptLogin);
                 if (passwordInput) passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') attemptLogin(); });
                 if (settingsCogButton) settingsCogButton.addEventListener('click', openSettingsModal);
                 if (closeSettingsModalBtn) closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
-                if (doneSettingsModalBtn) doneSettingsModalBtn.addEventListener('click', closeSettingsModal); // Listener for Done button
-
-                // ... (all other existing event listeners for modals, timer controls etc.) ...
+                if (doneSettingsModalBtn) doneSettingsModalBtn.addEventListener('click', closeSettingsModal);
                 if(logSetButton) logSetButton.addEventListener('click', handleLogSet);
                 if(finishExerciseButton) finishExerciseButton.addEventListener('click', handleFinishExercise);
                 if(saveTimerSettingsBtn) saveTimerSettingsBtn.addEventListener('click', saveTimerSettings);
@@ -604,7 +523,6 @@
                 if(minimizedStopBtn) minimizedStopBtn.addEventListener('click', () => stopAndHideRestTimer(true));
                 if(minimizedMaximizeBtn) minimizedMaximizeBtn.addEventListener('click', handleMaximizeTimer);
 
-                // NEW: Event listeners for bottom navigation buttons
                 if(showRoutinesBtnNav) showRoutinesBtnNav.addEventListener('click', () => toggleView('routines'));
                 if(showLogBtnNav) showLogBtnNav.addEventListener('click', () => toggleView('log'));
                 if(showCalendarBtnNav) showCalendarBtnNav.addEventListener('click', () => toggleView('calendar'));
