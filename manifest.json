@@ -1,0 +1,35 @@
+// manifest.json
+{
+  "name": "FitTrack - Your Fitness Companion",
+  "short_name": "FitTrack",
+  "description": "Log workouts, track progress, and stay consistent with FitTrack.",
+  "start_url": "/", // Where the app starts when launched from the icon
+  "scope": "/",     // Defines the navigation scope of the PWA. '/' is common.
+  "display": "standalone", // Crucial: Opens in its own window without browser UI
+  "background_color": "#FFFFFF", // Background of the splash screen (often white or a base color)
+  "theme_color": "#2D3748", // Color of the tool bar / status bar
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      // Path relative to this manifest.json file.
+      // Assumes manifest.json is in root, and icons/ folder is in root.
+      "src": "/icons/icon-180x180.png", // Good common size for iOS
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any" // "any" is a safe default, "maskable" is good for adaptive icons
+    },
+    {
+      "src": "/icons/icon-192x192.png", // Standard PWA size, often used by Android
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png", // Larger size for stores, desktop, etc.
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+    // Add more sizes if you have them (e.g., 72x72, 96x96, 128x128, 144x144, 256x256)
+  ]
+}
