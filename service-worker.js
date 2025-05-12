@@ -1,7 +1,6 @@
-```javascript
 // service-worker.js
 
-const CACHE_NAME = 'fittrack-v1.4'; // Increment version number!
+const CACHE_NAME = 'fittrack-v1.4'; // If you changed it before, keep your latest version number
 // Use relative paths from the root where SW is located
 const urlsToCache = [
     './', // Cache the root directory (often resolves to index.html)
@@ -23,8 +22,6 @@ self.addEventListener('install', event => {
             .then(cache => {
                 console.log('SW Opened cache:', CACHE_NAME);
                 console.log('SW Caching:', urlsToCache);
-                // Add URLs one by one for better error isolation if needed
-                // return Promise.all(urlsToCache.map(url => cache.add(url).catch(e => console.error(`SW failed to cache ${url}`, e))));
                 return cache.addAll(urlsToCache); // Make sure all paths in urlsToCache are correct!
             })
             .then(() => {
@@ -48,6 +45,7 @@ self.addEventListener('activate', event => {
                         console.log('SW Deleting old cache:', cacheName);
                         return caches.delete(cacheName);
                     }
+                    return null; // Explicitly return null for items not being deleted
                 })
             );
         }).then(() => {
@@ -73,15 +71,19 @@ self.addEventListener('fetch', event => {
                 // Return cache hit, or fetch from network
                 return response || fetch(event.request).catch(fetchError => {
                     // Handle network fetch errors (e.g., offline)
-                    console.warn('SW Network fetch failed:', event.request.url, fetchError);
+                    console.warn('SW Network fetch failed for:', event.request.url, fetchError);
                     // Optionally return a specific offline response here if needed
-                    // return new Response("Network error.", { status: 503, statusText: "Network error."});
-                    throw fetchError; // Re-throw error if not handling offline page
+                    // For example, if it's a navigation request, you might return a fallback HTML page
+                    // if (event.request.mode === 'navigate') {
+                    //    return caches.match('offline.html'); // Assuming you have an offline.html cached
+                    // }
+                    throw fetchError; // Re-throw error if not handling offline page specifically
                 });
             })
             .catch(error => {
-                 console.error('SW Fetch handling error:', event.request.url, error);
-                 // Consider returning a custom offline response or just letting the browser handle the error
+                 // This catch might be redundant if the inner fetch().catch() handles it,
+                 // but good for overall robustness.
+                 console.error('SW Fetch handling error for:', event.request.url, error);
             })
     );
 });
@@ -90,18 +92,20 @@ self.addEventListener('fetch', event => {
 // --- Message Handling for Timer ---
 
 self.addEventListener('message', event => {
-    console.log('SW Received message:', event.data); // *** DEBUG: See if message arrives ***
+    console.log('SW Received message:', event.data);
 
     if (event.data && event.data.type === 'SCHEDULE_REST_END') {
         const endTime = event.data.endTime;
         const now = Date.now();
         const delay = Math.max(0, endTime - now);
 
-        console.log(`SW Scheduling notification for: ${new Date(endTime).toLocaleTimeString()} (Delay: ${delay}ms)`); // *** DEBUG: Log schedule time ***
+        console.log(`SW Scheduling notification for: ${new Date(endTime).toLocaleTimeString()} (Delay: ${delay}ms)`);
 
         // Clear any previous timer attempts
-        clearTimeout(activeTimerTimeoutId);
-        activeTimerTimeoutId = null;
+        if (activeTimerTimeoutId) {
+            clearTimeout(activeTimerTimeoutId);
+            activeTimerTimeoutId = null;
+        }
         self.registration.getNotifications({ tag: 'rest-timer-notification' })
             .then(notifications => {
                  if(notifications && notifications.length > 0) {
@@ -112,47 +116,46 @@ self.addEventListener('message', event => {
 
          // Check Notification permission state (best effort check in SW)
          if (typeof self.Notification !== 'undefined' && self.Notification.permission !== 'granted') {
-             console.warn("SW: Notification permission state checked in SW is NOT 'granted'. This notification may fail or depend on setTimeout."); // *** DEBUG: Log permission issue ***
+             console.warn("SW: Notification permission state checked in SW is NOT 'granted'. Notification may fail or depend on setTimeout.");
          }
 
         // **Attempt TimestampTrigger**
         if ('showTrigger' in Notification.prototype && 'TimestampTrigger' in self) {
-            console.log('SW: TimestampTrigger API is supported. Attempting to use it.'); // *** DEBUG: Log attempt ***
+            console.log('SW: TimestampTrigger API is supported. Attempting to use it.');
             try {
                 self.registration.showNotification("FitTrack: Rest Over!", {
                     body: "Time's up! Let's get back to the workout.",
-                    icon: 'icons/icon-192x192.png', // Use your main 192 icon
-                    badge: 'icons/badge-72x72.png', // Use your 72 badge icon
-                    tag: 'rest-timer-notification', // Groups notifications, replaces previous one
-                    renotify: true, // Vibrate/sound even if replacing previous tag (useful if user misses first)
-                    vibrate: [200, 100, 200], // Optional vibration
+                    icon: 'icons/icon-192x192.png',
+                    badge: 'icons/badge-72x72.png',
+                    tag: 'rest-timer-notification',
+                    renotify: true,
+                    vibrate: [200, 100, 200],
                     showTrigger: new TimestampTrigger(endTime)
                 }).then(() => {
-                    console.log('SW: TimestampTrigger notification scheduled successfully.'); // *** DEBUG: Log success ***
-                }).catch(err => { // Catch errors from the showNotification promise itself
-                    console.error("SW: ERROR scheduling notification with TimestampTrigger (Promise Rejection):", err); // *** DEBUG: Log specific error ***
-                    console.warn("SW: Falling back to setTimeout due to TimestampTrigger error."); // *** DEBUG: Log fallback ***
+                    console.log('SW: TimestampTrigger notification scheduled successfully.');
+                }).catch(err => {
+                    console.error("SW: ERROR scheduling notification with TimestampTrigger (Promise Rejection):", err);
+                    console.warn("SW: Falling back to setTimeout due to TimestampTrigger error.");
                     scheduleWithTimeout(delay);
                 });
-            } catch (syncError) { // Catch synchronous errors (e.g., invalid TimestampTrigger value)
-                 console.error("SW: SYNCHRONOUS ERROR scheduling notification with TimestampTrigger:", syncError); // *** DEBUG: Log sync error ***
-                 console.warn("SW: Falling back to setTimeout due to synchronous TimestampTrigger error."); // *** DEBUG: Log fallback ***
+            } catch (syncError) {
+                 console.error("SW: SYNCHRONOUS ERROR scheduling notification with TimestampTrigger:", syncError);
+                 console.warn("SW: Falling back to setTimeout due to synchronous TimestampTrigger error.");
                  scheduleWithTimeout(delay);
             }
         } else {
             // **Fallback using setTimeout**
-            console.warn('SW: TimestampTrigger API *not* supported or available. Using setTimeout fallback.'); // *** DEBUG: Log unsupported ***
+            console.warn('SW: TimestampTrigger API *not* supported or available. Using setTimeout fallback.');
             scheduleWithTimeout(delay);
         }
     }
     else if (event.data && event.data.type === 'CANCEL_REST_TIMER') {
-        console.log('SW: Received CANCEL_REST_TIMER message.'); // *** DEBUG: Log cancel ***
+        console.log('SW: Received CANCEL_REST_TIMER message.');
         if (activeTimerTimeoutId) {
             console.log('SW: Clearing active setTimeout ID:', activeTimerTimeoutId);
             clearTimeout(activeTimerTimeoutId);
             activeTimerTimeoutId = null;
         }
-        // Close any potentially showing/scheduled notification with the tag
         self.registration.getNotifications({ tag: 'rest-timer-notification' })
             .then(notifications => {
                 if (notifications && notifications.length > 0) {
@@ -165,19 +168,19 @@ self.addEventListener('message', event => {
 
 function scheduleWithTimeout(delay) {
     // Ensure delay is reasonable, setTimeout has limits
-    if (delay > 2**31 - 1) { // Max delay approx 24.8 days
+    if (delay > 2147483647) { // Max signed 32-bit integer (approx 24.8 days)
         console.warn(`SW: Requested setTimeout delay (${delay}ms) exceeds maximum, capping.`);
-        delay = 2**31 - 1;
+        delay = 2147483647;
     }
-    console.log(`SW: Scheduling setTimeout with delay: ${delay}ms`); // *** DEBUG: Log setTimeout schedule ***
+    console.log(`SW: Scheduling setTimeout with delay: ${delay}ms`);
     activeTimerTimeoutId = setTimeout(() => {
-        console.log('SW: setTimeout timer fired!'); // *** DEBUG: Log firing ***
+        console.log('SW: setTimeout timer fired!');
         // Ensure notifications are available before showing
         if ('Notification' in self && self.Notification.permission === 'granted') {
             self.registration.showNotification("FitTrack: Rest Over!", {
                 body: "Time's up! Let's get back to the workout.",
-                icon: 'icons/icon-192x192.png', // Use your main 192 icon
-                badge: 'icons/badge-72x72.png', // Use your 72 badge icon
+                icon: 'icons/icon-192x192.png',
+                badge: 'icons/badge-72x72.png',
                 tag: 'rest-timer-notification',
                 renotify: true,
                 vibrate: [200, 100, 200]
@@ -203,7 +206,6 @@ self.addEventListener('notificationclick', event => {
             // Check if there's already a window open for this origin+scope
             for (let i = 0; i < windowClients.length; i++) {
                 const client = windowClients[i];
-                // Make URL check more robust for different base paths if needed
                 // Matching just the origin is usually safe for simple PWAs
                 if (client.url.startsWith(self.location.origin) && 'focus' in client) {
                     console.log('SW: Focusing existing client window.');
@@ -216,12 +218,10 @@ self.addEventListener('notificationclick', event => {
                 // Use '.' which refers to the SW's scope (usually the root)
                 return clients.openWindow('.');
             }
+            return null; // Explicitly return null if no action taken
         })
         .catch(error => {
             console.error('SW: Error handling notification click:', error);
         })
     );
 });
-```
-
----
