@@ -11,16 +11,16 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icons/icon-192x192.png",  // Main app icon
+      "src": "icons/icon-192x192.png",  
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"       // Use as primary icon for install/display
+      "purpose": "any maskable"       
     },
     {
-       "src": "icons/badge-72x72.png",   // Icon for notifications (badge)
+       "src": "icons/badge-72x72.png",   
        "sizes": "72x72",
        "type": "image/png",
-       "purpose": "badge"              // Explicitly mark as badge
+       "purpose": "badge"              
     }
   ]
 }
