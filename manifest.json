@@ -2,7 +2,7 @@
   "name": "FitTrack - Your Fitness Companion",
   "short_name": "FitTrack",
   "description": "Log workouts, track progress, and stay consistent with FitTrack.",
-  "start_url": "https://fittrackapp.github.io/Fittrack/",
+  "start_url": "./",
   "scope": ".",
   "display": "standalone",
   "background_color": "#FFFFFF",
