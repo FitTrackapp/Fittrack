@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json"> <!-- Ensure manifest.json exists and start_url is correct (e.g., "/") -->
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2D3748">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FitTrack">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png"> <!-- Ensure icons/icon-192x192.png exists at root -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <title>FitTrack - Your Fitness Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -49,15 +49,61 @@
         #appHeader { flex-shrink: 0; position: sticky; top: 0; z-index: 10; top: constant(safe-area-inset-top); top: env(safe-area-inset-top); }
         #mainAppContentWrapper { flex-grow: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         #mainAppContentWrapper > main { padding-bottom: 1rem; }
-        #bottomNavBar { background-color: #f8fafc; border-top: 1px solid #e2e8f0; box-shadow: 0 -1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: stretch; height: 60px; flex-shrink: 0; padding-bottom: constant(safe-area-inset-bottom); padding-bottom: env(safe-area-inset-bottom); position: sticky; bottom: 0; z-index: 10; }
-        .nav-button { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0.25rem 0.1rem; font-size: 0.6rem; color: #64748b; background-color: transparent; border: none; cursor: pointer; text-align: center; transition: color 0.2s ease-in-out; -webkit-tap-highlight-color: transparent; }
-        .nav-button svg { width: 1.375rem; height: 1.375rem; margin-bottom: 2px; }
-        .nav-button.active { color: #1e293b; }
-        .nav-button:hover:not(.active) { color: #334155; }
+        #bottomNavBar {
+            background-color: #f8fafc; /* Light background for the nav bar */
+            border-top: 1px solid #e2e8f0; /* Subtle top border */
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: stretch; /* Ensure buttons stretch to fill height */
+            height: 60px; /* Base height */
+            flex-shrink: 0;
+            padding-bottom: constant(safe-area-inset-bottom); /* iOS safe area */
+            padding-bottom: env(safe-area-inset-bottom);    /* iOS safe area */
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+        
+        .nav-button {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.375rem 0.1rem; /* Tailwind py-1.5, increased vertical padding a bit for better spacing */
+            font-size: 0.75rem;    /* Tailwind text-xs (12px). Was 0.6rem, which is very small. */
+            color: #64748b;        /* Default color for nav text and SVG (via currentColor) */
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            transition: color 0.2s ease-in-out, transform 0.1s ease-out; /* Added transform for tap feedback */
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+            line-height: 1.2; /* Ensure text doesn't get too cramped */
+        }
+        .nav-button svg {
+            width: 1.5rem;    /* 24px. Was 1.375rem (22px). Slightly larger for better visibility. */
+            height: 1.5rem;   /* 24px */
+            margin-bottom: 3px; /* Increased slightly for new icon/text size */
+            display: block;     /* Ensures it's treated as a block for layout */
+            flex-shrink: 0;     /* Prevents SVG from shrinking if space is tight */
+            /* stroke="currentColor" in the SVG markup will inherit the .nav-button's color */
+        }
+        .nav-button.active {
+            color: #1e293b; /* Active color for nav text and SVG */
+        }
+        .nav-button:hover:not(.active) { /* Desktop hover state */
+            color: #334155;
+        }
+        .nav-button:active { /* Visual feedback on tap */
+            transform: scale(0.95);
+        }
 
 
         /* --- MOBILE RESPONSIVE STYLES --- */
         @media (max-width: 767px) {
+            /* General button styles (you already have these, ensure they are suitable) */
             .btn { padding: 0.75rem 1.25rem; font-size: 1rem; }
             .btn-small { padding: 0.5rem 1rem; font-size: 0.875rem; }
             .btn-text-icon { padding: 0.5rem 0.75rem; font-size: 0.875rem; }
@@ -70,7 +116,18 @@
             .calendar-routine-name { font-size: 0.875rem; min-height: auto; line-height: 1.4; margin-top: 0.5rem; }
             .calendar-day .completion-checkbox { transform: scale(1.1); margin-top: 0.5rem; }
             .calendar-day label[for^="calDone-"] { font-size: 0.875rem; margin-left: 0.375rem; }
-            .nav-button { font-size: 0.75rem; }
+            
+            /* Nav button text was already 0.75rem in your mobile styles, which is good. */
+            /* SVG icons also already adjusted via the base .nav-button svg style above. */
+            /* If further specific mobile adjustments for nav icons are needed, they'd go here: */
+            /*
+            .nav-button svg {
+                width: 1.625rem; // Example: even larger on small mobile
+                height: 1.625rem;
+            }
+            */
+
+            /* Other existing mobile styles */
             .number-input-slick, .select-slick, input[type="date"], textarea { font-size: 1rem; }
             #passwordInput { font-size: 1.125rem; }
             #settingsModalContent, #cancelDayConfirmationModalContent, #workoutSummaryModalContent { padding: 1.25rem; }
@@ -81,79 +138,6 @@
             #fullscreenTimerControls .btn-text-icon { font-size: 0.875rem; }
         }
         /* --- END OF MOBILE RESPONSIVE STYLES --- */
-
-        /* --- COSMETIC HOME INDICATOR (for standalone PWA) --- */
-        /* This is optional, if you want to add your own styled line at the bottom */
-        /*
-        @media all and (display-mode: standalone) {
-            #bottomNavBar::after {
-                content: '';
-                position: absolute;
-                left: 50%;
-                transform: translateX(-50%);
-                bottom: 8px;
-                width: 130px;
-                height: 5px;
-                background-color: #A0A0A0;
-                border-radius: 100px;
-                opacity: 0.6;
-            }
-        }
-        */
-        /* --- END OF COSMETIC HOME INDICATOR --- */
-
-
-        /* --- SVG DEBUGGING STYLES FOR STANDALONE MODE --- */
-        /* --- IMPORTANT: UNCOMMENT ONLY ONE BLOCK (A, B, or C) AT A TIME FOR TESTING --- */
-
-        
-        // --- TEMPORARY SVG VISIBILITY TEST (A) ---
-        // Purpose: Check if SVGs are present but invisible due to color.
-        @media all and (display-mode: standalone) {
-            #bottomNavBar .nav-button svg path {
-                stroke: red !important;
-                fill: red !important;
-                stroke-width: 2px !important;
-            }
-            #bottomNavBar .nav-button svg {
-                background-color: yellow !important;
-                border: 1px solid blue !important;
-            }
-        }
-        // --- END OF TEMPORARY TEST (A) ---
-        
-
-        /*
-        // --- TEMPORARY SVG SIZE/DISPLAY TEST (B) ---
-        // Purpose: Check if SVGs are collapsing or not being displayed.
-        @media all and (display-mode: standalone) {
-            #bottomNavBar .nav-button svg {
-                width: 30px !important;
-                height: 30px !important;
-                display: inline-block !important;
-                opacity: 1 !important;
-                background-color: limegreen !important;
-                border: 2px dashed purple !important;
-            }
-        }
-        // --- END OF TEMPORARY TEST (B) ---
-        */
-
-        /*
-        // --- TEMPORARY NAV BUTTON TEXT COLOR TEST (C) ---
-        // Purpose: Check if currentColor inheritance for SVGs is working.
-        @media all and (display-mode: standalone) {
-            #bottomNavBar .nav-button {
-                color: fuchsia !important;
-            }
-            #bottomNavBar .nav-button.active {
-                color: cyan !important;
-            }
-        }
-        // --- END OF TEMPORARY TEST (C) ---
-        */
-
-        /* --- END OF SVG DEBUGGING STYLES --- */
 
     </style>
 </head>
@@ -318,7 +302,8 @@
 
     <script>
         // --- START OF JAVASCRIPT LOGIC ---
-        // (Your existing JavaScript code goes here - no changes needed to JS for this CSS debugging)
+        // Ensure your full JavaScript code is pasted here.
+        // This is a placeholder for brevity.
         try {
             console.log("FitTrack Script: Starting execution.");
 
@@ -639,7 +624,7 @@
                 // --- Service Worker Registration ---
                 if ('serviceWorker' in navigator) {
                      window.addEventListener('load', () => {
-                        navigator.serviceWorker.register('service-worker.js') // Ensure service-worker.js exists at root
+                        navigator.serviceWorker.register('service-worker.js') 
                            .then(reg => {
                                console.log('Main Script: SW registered successfully. Scope:', reg.scope);
                                reg.addEventListener('updatefound', () => { const newWorker = reg.installing; console.log('Main Script: SW Update Found', newWorker); newWorker.addEventListener('statechange', () => { console.log('Main Script: SW State Change:', newWorker.state); }); });
@@ -662,6 +647,3 @@
     </script>
 </body>
 </html>
-```
-
-
