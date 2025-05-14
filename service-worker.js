@@ -1,194 +1,129 @@
-// service-worker.js
+js
 
-const CACHE_NAME = 'fittrack-v1.5'; // <<<< INCREMENT THIS if you change cached files later
+const CACHE_NAME = 'fittrack-cache-v2'; // Incremented version for new cache
 const urlsToCache = [
-    './',
-    'index.html',
-    'manifest.json',
-    'service-worker.js',
-    'icons/icon-192x192.png',
-    'icons/badge-72x72.png'
+  '/Fittrack/',
+  '/Fittrack/index.html',
+  '/Fittrack/manifest.json',
+ 
+  '/Fittrack/styles/main.css',    
+  '/Fittrack/scripts/app.js',     
+  '/Fittrack/icons/icon-192x192.png',
+  '/Fittrack/icons/icon-512x512.png'
+  // Add other essential assets here using the '/Fittrack/' prefix
 ];
 
-let activeTimerTimeoutId = null;
-
 self.addEventListener('install', event => {
-    console.log('SW Install Event: Caching app shell');
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('SW Opened cache:', CACHE_NAME);
-                console.log('SW Caching:', urlsToCache);
-                return cache.addAll(urlsToCache);
-            })
-            .then(() => {
-                console.log('SW Shell cached successfully. Skipping waiting.');
-                return self.skipWaiting();
-             })
-            .catch(error => {
-                console.error('SW Caching failed during install:', error);
-            })
-    );
+  console.log('Service Worker V2: Installing...');
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Service Worker V2: Caching app shell');
+        return cache.addAll(urlsToCache);
+      })
+      .then(() => self.skipWaiting())
+      .catch(error => {
+        console.error('Service Worker V2: Failed to cache during install:', error);
+        // Log which URLs might have failed
+        urlsToCache.forEach(url => {
+            fetch(url).catch(() => console.error('Failed to fetch for caching:', url));
+        });
+      })
+  );
 });
 
 self.addEventListener('activate', event => {
-    console.log('SW Activate Event: Cleaning old caches...');
-    const cacheWhitelist = [CACHE_NAME];
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (!cacheWhitelist.includes(cacheName)) {
-                        console.log('SW Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                    return null;
-                })
-            );
-        }).then(() => {
-             console.log('SW Claiming clients.');
-             return self.clients.claim();
+  console.log('Service Worker V2: Activating...');
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            console.log('Service Worker V2: Clearing old cache', cache);
+            return caches.delete(cache);
+          }
         })
-        .catch(error => {
-            console.error('SW Activation failed:', error);
-        })
-    );
+      );
+    }).then(() => {
+      console.log('Service Worker V2: Clients claimed.');
+      return self.clients.claim();
+    })
+  );
 });
 
 self.addEventListener('fetch', event => {
-    if (event.request.method !== 'GET' || event.request.url.startsWith('chrome-extension://')) {
-       return;
-    }
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                return response || fetch(event.request).catch(fetchError => {
-                    console.warn('SW Network fetch failed for:', event.request.url, fetchError);
-                    throw fetchError;
-                });
-            })
-            .catch(error => {
-                 console.error('SW Fetch handling error for:', event.request.url, error);
-            })
-    );
+  // Cache First, then Network strategy
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          // console.log('SW V2: Serving from cache:', event.request.url);
+          return response; 
+        }
+        // console.log('SW V2: Fetching from network:', event.request.url);
+        return fetch(event.request).then(
+            networkResponse => {
+                // Optional: Cache new successful GET requests dynamically
+                // Be careful with what you cache dynamically, especially third-party scripts if not intended
+                if (networkResponse && networkResponse.status === 200 && event.request.method === 'GET') {
+                    // Example: Only cache if it's from your own origin and not a CDN like tailwind
+                    if (event.request.url.startsWith(self.location.origin)) { 
+                        const responseToCache = networkResponse.clone();
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                // console.log('SW V2: Caching new resource:', event.request.url);
+                                cache.put(event.request, responseToCache);
+                            });
+                    }
+                }
+                return networkResponse;
+            }
+        ).catch(error => {
+            console.error('SW V2: Fetch failed for:', event.request.url, error);
+            // Optional: Fallback for offline if not in cache and network fails
+            // You would need to create and cache an offline.html page
+            // if (event.request.mode === 'navigate') { // Only for page navigations
+            //   return caches.match('/Fittrack/offline.html');
+            // }
+          }); 
+      })
+  );
 });
 
+// Listener for messages from the client (main app script)
 self.addEventListener('message', event => {
-    console.log('SW Received message:', event.data);
-
+    console.log('SW V2: Message received from client:', event.data);
     if (event.data && event.data.type === 'SCHEDULE_REST_END') {
         const endTime = event.data.endTime;
         const now = Date.now();
         const delay = Math.max(0, endTime - now);
-        console.log(`SW Scheduling notification for: ${new Date(endTime).toLocaleTimeString()} (Delay: ${delay}ms)`);
 
-        if (activeTimerTimeoutId) {
-            clearTimeout(activeTimerTimeoutId);
-            activeTimerTimeoutId = null;
+        // Clear any existing timeout for 'restTimerNotification'
+        if (self.restTimerTimeoutId) {
+            clearTimeout(self.restTimerTimeoutId);
         }
-        self.registration.getNotifications({ tag: 'rest-timer-notification' })
-            .then(notifications => {
-                 if(notifications && notifications.length > 0) {
-                    console.log(`SW Closing ${notifications.length} previous notifications.`);
-                    notifications.forEach(notification => notification.close());
-                 }
-            }).catch(err => console.error("SW Error closing old notifications:", err));
-
-         if (typeof self.Notification !== 'undefined' && self.Notification.permission !== 'granted') {
-             console.warn("SW: Notification permission state checked in SW is NOT 'granted'. Notification may fail or depend on setTimeout.");
-         }
-
-        if ('showTrigger' in Notification.prototype && 'TimestampTrigger' in self) {
-            console.log('SW: TimestampTrigger API is supported. Attempting to use it.');
-            try {
-                self.registration.showNotification("FitTrack: Rest Over!", {
-                    body: "Time's up! Let's get back to the workout.",
-                    icon: 'icons/icon-192x192.png',
-                    badge: 'icons/badge-72x72.png',
-                    tag: 'rest-timer-notification',
-                    renotify: true,
-                    vibrate: [200, 100, 200],
-                    showTrigger: new TimestampTrigger(endTime)
-                }).then(() => {
-                    console.log('SW: TimestampTrigger notification scheduled successfully.');
-                }).catch(err => {
-                    console.error("SW: ERROR scheduling with TimestampTrigger (Promise Rejection):", err);
-                    console.warn("SW: Falling back to setTimeout due to TimestampTrigger error.");
-                    scheduleWithTimeout(delay);
-                });
-            } catch (syncError) {
-                 console.error("SW: SYNCHRONOUS ERROR with TimestampTrigger:", syncError);
-                 console.warn("SW: Falling back to setTimeout due to sync TimestampTrigger error.");
-                 scheduleWithTimeout(delay);
-            }
-        } else {
-            console.warn('SW: TimestampTrigger API *not* supported. Using setTimeout fallback.');
-            scheduleWithTimeout(delay);
+        
+        console.log(`SW V2: Scheduling notification in ${delay / 1000} seconds.`);
+        self.restTimerTimeoutId = setTimeout(() => {
+            console.log('SW V2: Showing rest timer notification.');
+            self.registration.showNotification('FitTrack Rest Timer', {
+                body: "Your rest period is over! Time to get back to it.",
+                icon: '/Fittrack/icons/icon-192x192.png', // Ensure this path is correct
+                vibrate: [200, 100, 200],
+                tag: 'rest-timer-notification' // Use a tag to replace previous notifications
+            });
+            delete self.restTimerTimeoutId; // Clear the timeout ID after firing
+        }, delay);
+    } else if (event.data && event.data.type === 'CANCEL_REST_TIMER') {
+        console.log('SW V2: Cancel rest timer message received.');
+        if (self.restTimerTimeoutId) {
+            clearTimeout(self.restTimerTimeoutId);
+            delete self.restTimerTimeoutId;
+            console.log('SW V2: Rest timer notification cancelled.');
         }
+        // Close any existing notification with the tag
+        self.registration.getNotifications({tag: 'rest-timer-notification'}).then(notifications => {
+            notifications.forEach(notification => notification.close());
+        });
     }
-    else if (event.data && event.data.type === 'CANCEL_REST_TIMER') {
-        console.log('SW: Received CANCEL_REST_TIMER message.');
-        if (activeTimerTimeoutId) {
-            console.log('SW: Clearing active setTimeout ID:', activeTimerTimeoutId);
-            clearTimeout(activeTimerTimeoutId);
-            activeTimerTimeoutId = null;
-        }
-        self.registration.getNotifications({ tag: 'rest-timer-notification' })
-            .then(notifications => {
-                if (notifications && notifications.length > 0) {
-                    console.log('SW: Closing existing notifications with tag on cancel.');
-                    notifications.forEach(notification => notification.close());
-                }
-            }).catch(err => console.error("SW Error closing notifications on cancel:", err));
-    }
-});
-
-function scheduleWithTimeout(delay) {
-    if (delay > 2147483647) {
-        console.warn(`SW: Requested setTimeout delay (${delay}ms) exceeds maximum, capping.`);
-        delay = 2147483647;
-    }
-    console.log(`SW: Scheduling setTimeout with delay: ${delay}ms`);
-    activeTimerTimeoutId = setTimeout(() => {
-        console.log('SW: setTimeout timer fired!');
-        if ('Notification' in self && self.Notification.permission === 'granted') {
-            self.registration.showNotification("FitTrack: Rest Over!", {
-                body: "Time's up! Let's get back to the workout.",
-                icon: 'icons/icon-192x192.png',
-                badge: 'icons/badge-72x72.png',
-                tag: 'rest-timer-notification',
-                renotify: true,
-                vibrate: [200, 100, 200]
-            }).catch(err => console.error("SW: Error showing notification from setTimeout:", err));
-        } else {
-            console.warn("SW: setTimeout fired, but cannot show notification (Permission issue or API unavailable).")
-        }
-        activeTimerTimeoutId = null;
-    }, delay);
-    console.log(`SW: setTimeout scheduled with ID: ${activeTimerTimeoutId}`);
-}
-
-self.addEventListener('notificationclick', event => {
-    console.log('SW: Notification clicked.');
-    const clickedNotification = event.notification;
-    clickedNotification.close();
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-            for (let i = 0; i < windowClients.length; i++) {
-                const client = windowClients[i];
-                if (client.url.startsWith(self.location.origin) && 'focus' in client) {
-                    console.log('SW: Focusing existing client window.');
-                    return client.focus();
-                }
-            }
-            if (clients.openWindow) {
-                console.log('SW: Opening new client window.');
-                return clients.openWindow('.');
-            }
-            return null;
-        })
-        .catch(error => {
-            console.error('SW: Error handling notification click:', error);
-        })
-    );
 });
