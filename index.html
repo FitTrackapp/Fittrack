@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json"> <!-- This is relative, so it's /Fittrack/manifest.json -->
     <meta name="theme-color" content="#2D3748">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FitTrack">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png"> <!-- Relative path, so /Fittrack/icons/... -->
     <title>FitTrack - Your Fitness Companion</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
         .calendar-day.completed { background-color: #d1fae5; border-color: #a1eec6; box-shadow: 0 1px 3px rgba(22, 163, 74, 0.1); } .calendar-day.rest-day .calendar-routine-name { color: #6b7280; font-style: italic; }
         #currentDayInfo, #activeExerciseNameDisplay, #activeExerciseTargetsDisplay, #currentExerciseInDayDisplay, #workoutDurationDisplay, label, #activeSetDisplay, #routinesAccordion > p, #loggedWorkoutsAccordion > p, #bodyWeightLogList > p, #consistencyTrackerWrapper h3, #consistencyTracker p, #personalBestsListEl h4, #muscleGroupFocus h3, #muscleGroupPbsListEl h5, #settingsModalContent h2, #settingsModalContent h3, #settingsModalContent p, #resetConfirmationArea p, #cancelDayConfirmationModalContent h2, #cancelDayConfirmationModalContent p, #workoutSummaryModalContent h2, #workoutSummaryModalContent p, #summaryModalBody span { color: #1f2937; }
         #personalBestsList > p, #muscleGroupPbsList > p { color: #6b7280; font-style: italic; } #settingsModalContent .pt-6 { color: #6b7280; } footer { color: #6b7280; }
-        #settingsCogButton { color: #d1d5db; } #settingsCogButton:hover { color: white; } /* This makes settingsCogButton SVG work */
+        #settingsCogButton { color: #d1d5db; } #settingsCogButton:hover { color: white; } 
         #closeSettingsModalBtn, #closeSummaryModalBtn { padding: 0.75rem; margin: -0.75rem; border-radius: 9999px; transition: background-color 0.2s ease-in-out; color: #9ca3af; }
         #closeSettingsModalBtn:hover, #closeSummaryModalBtn:hover { background-color: rgba(0,0,0,0.05); color: #4b5563; }
         #closeSettingsModalBtn svg, #closeSummaryModalBtn svg { display: block; }
@@ -71,11 +71,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* Adjusted padding to move content slightly down */
-            padding-top: 1.75rem;    /* Approx 9.6px */
-            padding-bottom: 0.25rem; /* Approx 4px */
-            padding-left: 0.1rem;
-            padding-right: 0.1rem; 
+            padding-top: 1.15rem;   /* For lower positioning */
+            padding-bottom: 0rem;   /* For lower positioning */
+            padding-left: 0.1rem;   
+            padding-right: 0.1rem;  
             font-size: 0.75rem; 
             color: #64748b; 
             background-color: transparent;
@@ -89,7 +88,7 @@
         .nav-button svg {
             width: 1.5rem; 
             height: 1.5rem;  
-            margin-bottom: 3px;
+            margin-bottom: 3px; 
             display: block;    
             flex-shrink: 0;    
         }
@@ -108,9 +107,6 @@
             .btn { padding: 0.75rem 1.25rem; font-size: 1rem; }
             .btn-small { padding: 0.5rem 1rem; font-size: 0.875rem; }
             
-            /* .nav-button already has good base styles for mobile from above */
-            /* .nav-button svg size already good from base style */
-
             #activeWorkoutSection div.flex.space-x-3.mt-6 { flex-direction: column; gap: 0.75rem; align-items: stretch; }
             #activeWorkoutSection div.flex.space-x-3.mt-6 > .btn { width: 100%; margin-left: 0 !important; margin-right: 0 !important; }
             #calendarGrid { grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 0.75rem; }
@@ -147,122 +143,38 @@
 <body class="text-gray-800">
 
     <div id="loginScreen" class="fixed inset-0 bg-gray-100 flex items-center justify-center z-50 p-4">
-         <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-sm text-center border border-gray-200">
-            <h3 class="text-2xl font-semibold text-gray-700 mb-2">Hello Nathan</h3>
-            <p class="text-gray-500 mb-8">Welcome back!</p>
-            <input type="password" id="passwordInput" placeholder="Password" class="w-full px-4 py-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-gray-500 text-lg text-center shadow-sm">
-            <button id="loginButton" class="btn btn-login w-full py-3 text-lg">Login</button>
-            <p id="loginFeedback" class="text-red-500 text-sm mt-4 h-5"></p>
-        </div>
+        <!-- Login Screen Content -->
     </div>
 
     <div id="appContainer" class="truly-hidden">
         <header id="appHeader" class="bg-gray-800 text-white p-4 sm:p-6 shadow-lg">
-            <div class="container mx-auto max-w-4xl flex justify-between items-center">
-               <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">FitTrack</h1>
-               <button id="settingsCogButton" class="p-2" aria-label="Settings">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-               </button>
-           </div>
+            <!-- Header Content -->
         </header>
 
         <div id="mainAppContentWrapper">
-            <div id="currentDayInfo" class="container mx-auto max-w-4xl p-4 md:px-6 text-center text-sm text-gray-600 font-medium"></div>
-            <div id="minimizedTimerBar" class="container mx-auto max-w-4xl truly-hidden rounded-md">
-                 <span id="minimizedTimerBarText">Rest Time: 00:00</span>
-                 <div id="minimizedTimerControls" class="flex items-center space-x-2">
-                    <button id="minimizedPauseResumeBtn" title="Pause/Resume" class="btn btn-icon"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" id="minimizedPlayIconPath"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"  /></svg><svg class="w-5 h-5 truly-hidden" fill="currentColor" viewBox="0 0 20 20" id="minimizedPauseIconPath"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm4 0a1 1 0 012 0v4a1 1 0 11-2 0V8z" clip-rule="evenodd" /></svg></button>
-                    <button id="minimizedAdd15sBtn" title="+15 Seconds" class="btn btn-primary-app btn-text-icon text-xs px-2 py-1 font-semibold">+15s</button>
-                    <button id="minimizedStopBtn" title="Stop Rest" class="btn btn-icon btn-danger-app"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" clip-rule="evenodd" /></svg></button>
-                    <button id="minimizedMaximizeBtn" title="Maximize Timer" class="btn btn-icon btn-primary-app"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l7-7 7 7M5 19l7-7 7 7"></path></svg></button>
-                </div>
-            </div>
-
-            <main class="container mx-auto max-w-4xl p-4 md:p-6 pt-0 md:pt-0 space-y-8">
-                <section id="activeWorkoutSection" class="content-section p-6 md:p-8 truly-hidden">
-                     <div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-semibold text-gray-900">Active Workout</h2><button id="showCancelDayConfirmationBtn" class="btn btn-danger-app btn-small py-1 px-2">Cancel Day</button></div>
-                     <div id="activeExerciseInfo" class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200"><h3 id="activeExerciseNameDisplay" class="text-xl font-semibold text-gray-800">Exercise Name</h3><p id="activeExerciseTargetsDisplay" class="text-sm text-gray-600">Target: X sets of Y reps</p><p id="currentExerciseInDayDisplay" class="text-xs text-gray-500 mt-1">Exercise X of Y for the day</p><p id="workoutDurationDisplay" class="text-sm text-gray-600 mt-1 font-medium">Session Duration: 00:00</p></div>
-                     <div class="space-y-4"><div><label for="activeWorkoutDate" class="block text-sm font-medium text-gray-700">Workout Date</label><input type="date" id="activeWorkoutDate" name="activeWorkoutDate" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm text-gray-800"></div><div id="weightInputGroup"><label for="activeWeightInput" class="block text-sm font-medium text-gray-700 mb-1">Weight (<span id="activeUnitDisplayValue" class="text-gray-700">kg</span>)</label><input type="number" id="activeWeightInput" inputmode="decimal" min="0" step="0.1" value="0" class="number-input-slick mt-1"></div><div id="unitInputGroup"><label for="activeUnitInput" class="block text-sm font-medium text-gray-700">Unit</label><select id="activeUnitInput" class="select-slick mt-1"><option value="kg">kg</option><option value="lbs">lbs</option></select></div><div id="durationInputGroup" class="truly-hidden"><label for="activeDurationInput" id="activeDurationLabel" class="block text-sm font-medium text-gray-700 mb-1">Duration (seconds)</label><input type="number" id="activeDurationInput" inputmode="numeric" min="1" step="1" value="30" class="number-input-slick mt-1"></div><div id="rpeInputGroup" class="truly-hidden"><label for="activeRpeSelect" class="block text-sm font-medium text-gray-700">Perceived Exertion (RPE)</label><select id="activeRpeSelect" class="select-slick mt-1"><option value="">- Select RPE -</option><option value="Easy">Easy</option><option value="Medium">Medium</option><option value="Hard">Hard</option><option value="Extreme">Extreme</option></select></div><p id="activeSetDisplay" class="text-md font-medium text-gray-700 text-center my-2">Set: 1 / 3</p><div><label for="activeNotesInput" class="block text-sm font-medium text-gray-700">Notes (optional)</label><textarea id="activeNotesInput" rows="2" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm text-gray-800" placeholder="e.g., Felt strong, focus on form..."></textarea></div><div class="flex space-x-3 mt-6"><button id="logSetButton" class="flex-1 btn btn-primary-app font-semibold py-2 px-4 rounded-md shadow-md">Log Set & Rest</button><button id="finishExerciseButton" class="flex-1 btn btn-success-app font-semibold py-2 px-4 rounded-md shadow-md">Finish Exercise & Next</button></div></div>
-                     <div id="activeWorkoutFeedback" class="mt-4 text-sm h-5"></div>
-                </section>
-
-                <section id="workout-routines-section" class="content-section p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Workout Routines</h2>
-                    <div id="routinesAccordion" class="space-y-3"><p class="text-gray-500 italic">Loading routines...</p></div>
-                </section>
-
-                <section id="calendar-section" class="content-section p-6 md:p-8 section-hidden">
-                    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Weekly Schedule</h2>
-                    <div id="calendarGrid" class="grid grid-cols-7 gap-1 sm:gap-2"></div>
-                    <p class="text-xs text-gray-500 mt-4 italic">This calendar shows your scheduled routines...</p>
-                </section>
-
-                <section id="workout-list-section" class="content-section p-6 md:p-8 section-hidden">
-                     <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-semibold text-gray-900">Logged Workouts</h2></div>
-                     <div id="loggedWorkoutsAccordion" class="space-y-3"><p class="text-gray-500 italic">No workouts logged yet.</p></div>
-                </section>
-
-                <section id="body-weight-section" class="content-section p-6 md:p-8 section-hidden">
-                     <h2 class="text-2xl font-semibold mb-6 text-gray-900">Body Weight Log</h2>
-                     <form id="bodyWeightForm" class="space-y-4 mb-8"><div class="grid grid-cols-1 sm:grid-cols-3 gap-4"><div><label for="bodyWeightInput" class="block text-sm font-medium text-gray-700">Weight</label><input type="number" id="bodyWeightInput" inputmode="decimal" step="0.1" required class="number-input-slick mt-1"></div><div><label for="bodyWeightUnit" class="block text-sm font-medium text-gray-700">Unit</label><select id="bodyWeightUnit" class="select-slick mt-1"><option value="kg">kg</option><option value="lbs">lbs</option></select></div><div><label for="bodyWeightDate" class="block text-sm font-medium text-gray-700">Date</label><input type="date" id="bodyWeightDate" required class="number-input-slick mt-1"></div></div><button type="submit" class="btn btn-primary-app w-full sm:w-auto">Log Body Weight</button></form>
-                     <div id="bodyWeightLogList" class="space-y-3"><p class="text-gray-500 italic">No body weight logged yet.</p></div>
-                     <p id="bodyWeightFeedback" class="mt-4 text-sm h-5"></p>
-                </section>
-
-                <section id="progress-section" class="content-section p-6 md:p-8 section-hidden">
-                    <h2 class="text-2xl font-semibold mb-6 text-gray-900">Progress</h2>
-                    <div id="consistencyTrackerWrapper" class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 shadow-sm"><h3 class="text-lg font-semibold text-gray-800 mb-2">Workout Consistency</h3><div id="consistencyTracker" class=""><div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center"><div><p class="text-2xl font-bold text-gray-700" id="currentStreakDisplay">0</p><p class="text-xs text-gray-500">Current Streak (Days)</p></div><div><p class="text-2xl font-bold text-gray-700" id="workoutsThisWeekDisplay">0</p><p class="text-xs text-gray-500">Workouts This Week</p></div><div><p class="text-2xl font-bold text-gray-700" id="longestStreakDisplay">0</p><p class="text-xs text-gray-500">Longest Streak (Days)</p></div></div></div><p id="motivationalMessage" class="text-sm text-center text-gray-600 mt-4 italic"></p></div>
-                     <div class="accordion-item mb-6 border border-gray-200 rounded-lg shadow-sm"><button id="togglePBsBtn" class="accordion-button w-full flex justify-between items-center p-4 text-left"><span class="font-medium">Personal Bests (PBs)</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div id="personalBestsList" class="accordion-content p-4 space-y-4"><p class="text-gray-500 italic">No workouts logged yet.</p></div></div>
-                     <div class="accordion-item border border-gray-200 rounded-lg shadow-sm"><button id="toggleMuscleFocusBtn" class="accordion-button w-full flex justify-between items-center p-4 text-left"><span class="font-medium">Muscle Group Focus (Based on PBs)</span><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><div id="muscleGroupPbsList" class="accordion-content p-4 space-y-4"><p class="text-gray-500 italic">Log workouts to see.</p></div></div>
-                </section>
-            </main>
-             <footer class="text-center p-6 text-gray-600 text-sm">
-                <p>&copy; <span id="currentYear"></span> FitTrack. Keep Pushing!</p>
-            </footer>
+            <!-- Main App Sections (Active Workout, Routines, Calendar, etc.) -->
         </div>
 
         <nav id="bottomNavBar">
-            <button id="showRoutinesBtnNav" class="nav-button active" aria-label="View Routines">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" /></svg>
-                <span>Routines</span>
-            </button>
-            <button id="showLogBtnNav" class="nav-button" aria-label="View Logged Workouts">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>
-                <span>Log</span>
-            </button>
-            <button id="showCalendarBtnNav" class="nav-button" aria-label="View Calendar">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
-                <span>Calendar</span>
-            </button>
-            <button id="showBodyWeightBtnNav" class="nav-button" aria-label="View Body Weight Log">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52M6.25 4.97A48.417 48.417 0 0 1 12 4.5c2.291 0 4.545.16 6.75.47m-13.5 0C5.24 5.113 4.24 5.287 3 5.5m3.25-.53C5.186 6.649 4.75 7.863 4.75 9.255c0 4.628 3.633 8.443 8.25 8.443s8.25-3.815 8.25-8.443c0-1.392-.436-2.606-1.25-3.545m-6.75 7.652A1.5 1.5 0 1 1 12 13.5a1.5 1.5 0 0 1 0-3c0-2.105 1.5-2.105 1.5-2.105H12a1.5 1.5 0 0 1 0 3Z" /></svg>
-                <span>Weight</span>
-            </button>
-            <button id="progressBtnNav" class="nav-button" aria-label="View Progress">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" /></svg>
-                <span>Progress</span>
-            </button>
+            <!-- Nav Buttons (Routines, Log, Calendar, etc.) with SVGs and Spans -->
         </nav>
     </div>
 
-    <div id="settingsModal" class="truly-hidden">
-        <!-- ... (your modal content) ... -->
-    </div>
-    <div id="cancelDayConfirmationModal" class="truly-hidden"><!-- ... (your modal content) ... --></div>
-    <div id="workoutSummaryModal" class="truly-hidden"><!-- ... (your modal content) ... --></div>
-    <div id="fullscreenTimerOverlay" class="truly-hidden"><!-- ... (your modal content) ... --></div>
+    <!-- Modals (Settings, Confirmations, etc.) -->
+
 
     <script>
         // --- START OF JAVASCRIPT LOGIC ---
         // PASTE YOUR FULL JAVASCRIPT CODE HERE
-        // (This is a placeholder, ensure your original JS is included)
+        // This is a placeholder.
+        // Ensure your entire previous JavaScript block is included.
         try {
             console.log("FitTrack Script: Starting execution.");
 
             document.addEventListener('DOMContentLoaded', () => {
                 console.log("FitTrack Script: DOMContentLoaded event fired.");
 
-                // --- DOM Elements ---
+                // --- DOM Elements (ensure all are defined) ---
                 const loginScreen = document.getElementById('loginScreen');
                 const appContainer = document.getElementById('appContainer');
                 const mainAppContentWrapper = document.getElementById('mainAppContentWrapper');
@@ -573,10 +485,10 @@
                 if (sessionStorage.getItem('isFitTrackLoggedIn') === 'true') { loginScreen.classList.add('truly-hidden'); appContainer.classList.remove('truly-hidden'); initializeApp(); }
                 else { appContainer.classList.add('truly-hidden'); loginScreen.classList.remove('truly-hidden'); if(passwordInput) passwordInput.focus(); }
 
-                // --- Service Worker Registration ---
+                // --- Service Worker Registration (Corrected Path for GitHub Project Page) ---
                 if ('serviceWorker' in navigator) {
                      window.addEventListener('load', () => {
-                        navigator.serviceWorker.register('service-worker.js') 
+                        navigator.serviceWorker.register('/Fittrack/service-worker.js') // CORRECTED PATH
                            .then(reg => {
                                console.log('Main Script: SW registered successfully. Scope:', reg.scope);
                                reg.addEventListener('updatefound', () => { const newWorker = reg.installing; console.log('Main Script: SW Update Found', newWorker); newWorker.addEventListener('statechange', () => { console.log('Main Script: SW State Change:', newWorker.state); }); });
